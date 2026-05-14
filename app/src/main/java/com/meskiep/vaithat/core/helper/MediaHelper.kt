@@ -187,16 +187,32 @@ object MediaHelper {
         }
     }
 
-    inline suspend fun <reified T> writeModelToFile(context: Context, fileName: String, model: T): String {
-        try {
+    inline fun <reified T> writeModelToFile(
+        context: Context,
+        folder: String,
+        fileName: String,
+        model: T
+    ): String {
+        return try {
             val json = Gson().toJson(model)
-            context.openFileOutput(fileName, Context.MODE_PRIVATE).use { output ->
-                output.write(json.toByteArray())
-                return fileName
+
+            // Tạo folder trong internal storage
+            val dir = File(context.filesDir, folder)
+            if (!dir.exists()) {
+                dir.mkdirs()
             }
+
+            val file = File(dir, fileName)
+
+            file.outputStream().use { output ->
+                output.write(json.toByteArray())
+            }
+
+            file.absolutePath
         } catch (e: Exception) {
             e.printStackTrace()
-            return ""
+            eLog("writeModelToFile: ${e.message}")
+            ""
         }
     }
 

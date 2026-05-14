@@ -11,9 +11,11 @@ import com.meskiep.vaithat.core.extension.startIntentRightToLeft
 import com.meskiep.vaithat.core.extension.tap
 import com.meskiep.vaithat.core.helper.LanguageHelper
 import com.meskiep.vaithat.core.utils.DataLocal
+import com.meskiep.vaithat.core.utils.key.ValueKey
 import com.meskiep.vaithat.core.utils.state.RateState
 import com.meskiep.vaithat.databinding.ActivityHomeBinding
 import com.meskiep.vaithat.ui.SettingsActivity
+import com.meskiep.vaithat.ui.choose_avatar.ChooseAvatarActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -41,7 +43,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
 
     override fun viewListener() = with(binding) {
         actionBar.btnActionBarRight.tap { startIntentRightToLeft(SettingsActivity::class.java) }
-
+        homeFeatureAdapter.onItemClick = { feature -> handleFeature(feature) }
     }
 
     // Init
@@ -63,6 +65,16 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
     private fun submitHomeFeature() {
         homeFeatureAdapter.submitList(DataLocal.getHomeFeatureList())
     }
+
+    private fun handleFeature(feature: Int) {
+        when (feature) {
+            ValueKey.CREATION_EMOJI -> startIntentRightToLeft(ChooseAvatarActivity::class.java)
+            ValueKey.EMOJI_MAKER -> startIntentRightToLeft(ChooseAvatarActivity::class.java)
+            ValueKey.COSPLAY_EMOJI -> startIntentRightToLeft(ChooseAvatarActivity::class.java)
+            ValueKey.MY_CREATION -> startIntentRightToLeft(ChooseAvatarActivity::class.java)
+        }
+    }
+
     // Observable
     //==================================================================================================================
 

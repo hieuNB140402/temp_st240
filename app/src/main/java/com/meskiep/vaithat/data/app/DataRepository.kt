@@ -128,7 +128,8 @@ class DataRepository @Inject constructor(private val dataCharacterDAO: DataChara
                 level = customModel.level,
                 fileNameInternal = MediaHelper.writeModelToFile(
                     context,
-                    "${ValueKey.DATA_CHARACTER_ALBUM}/${customModel.dataName}",
+                    ValueKey.DATA_CHARACTER_ALBUM,
+                    customModel.dataName,
                     customModel
                 )
             )

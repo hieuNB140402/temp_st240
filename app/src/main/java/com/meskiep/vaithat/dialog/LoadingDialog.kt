@@ -6,7 +6,7 @@ import com.meskiep.vaithat.core.base.BaseDialog
 import com.meskiep.vaithat.databinding.DialogLoadingBinding
 
 class LoadingDialog(val context: Activity) :
-    BaseDialog<DialogLoadingBinding>(context) {
+    BaseDialog<DialogLoadingBinding>(context, true) {
     override val layoutId: Int = R.layout.dialog_loading
     override val isCancelOnTouchOutside: Boolean
         get() = false

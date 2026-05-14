@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.meskiep.vaithat.core.extension.dLog
 import com.meskiep.vaithat.core.extension.eLog
 import com.meskiep.vaithat.core.helper.InternetHelper
+import com.meskiep.vaithat.core.utils.key.ValueKey
 import com.meskiep.vaithat.core.utils.state.CallApiState
 import com.meskiep.vaithat.data.local.data_character.DataCharacter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,6 +19,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 import kotlin.collections.sortedBy
 import kotlin.collections.toCollection
 
@@ -74,15 +77,31 @@ class DataViewModel @Inject constructor(val dataRepository: DataRepository) : Vi
     }
 
     suspend fun regetData(context: Context): Flow<CallApiState<DataCharacter>> = flow {
-        deleteAllDataCharacter()
+        deleteAllDataCharacterRoom()
+        deleteAllDataCharacterInternal(context)
 
         dataRepository.getAllParts(context).collect { state ->
             emit(state)
         }
     }
 
+    suspend fun deleteAllDataCharacterInternal(context: Context) {
+        try {
+            val folder = File(context.filesDir, ValueKey.DATA_CHARACTER_ALBUM)
+
+            if (folder.exists()) {
+                folder.deleteRecursively()
+            } else {
+                eLog("Folder does not exist")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            eLog("deleteAllDataCharacterInternal: ${e.message}")
+        }
+    }
+
     // Room
-    suspend fun deleteAllDataCharacter() {
+    suspend fun deleteAllDataCharacterRoom() {
         dataRepository.deleteAllDataCharacter()
     }
 
