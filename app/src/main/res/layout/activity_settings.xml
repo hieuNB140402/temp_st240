@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.SettingsActivity">
+
+    <include layout="@layout/layout_background" />
+
+    <!-- layoutActionBar -->
+    <FrameLayout
+        android:id="@+id/layoutActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include
+            android:id="@+id/actionBar"
+            layout="@layout/layout_actionbar" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/layoutActionBar">
+
+        <!--        btnLanguage-->
+        <LinearLayout
+            android:id="@+id/btnLanguage"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/bg_focus_long"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="20dp"
+                android:src="@drawable/ic_settings_language" />
+
+            <com.meskiep.vaithat.core.custom.text.StrokeTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:fontFamily="@font/cookies"
+                android:gravity="start"
+                android:text="@string/language"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                app:strokeColor="@color/green_003B50"
+                app:strokeJoinStyle="round"
+                app:strokeMiter="5dp"
+                app:strokeWidth="2dp" />
+
+
+        </LinearLayout>
+
+        <!--        btnRate-->
+        <LinearLayout
+            android:id="@+id/btnRate"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/bg_focus_long"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="20dp"
+                android:src="@drawable/ic_settings_rate" />
+
+            <com.meskiep.vaithat.core.custom.text.StrokeTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:fontFamily="@font/cookies"
+                android:gravity="start"
+                android:text="@string/rate_us"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                app:strokeColor="@color/green_003B50"
+                app:strokeJoinStyle="round"
+                app:strokeMiter="5dp"
+                app:strokeWidth="2dp" />
+        </LinearLayout>
+
+        <!--        btnShare-->
+        <LinearLayout
+            android:id="@+id/btnShare"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/bg_focus_long"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="20dp"
+                android:src="@drawable/ic_settings_share" />
+
+            <com.meskiep.vaithat.core.custom.text.StrokeTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:fontFamily="@font/cookies"
+                android:gravity="start"
+                android:text="@string/share_app"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                app:strokeColor="@color/green_003B50"
+                app:strokeJoinStyle="round"
+                app:strokeMiter="5dp"
+                app:strokeWidth="2dp" />
+        </LinearLayout>
+
+        <!--        btnPolicy-->
+        <LinearLayout
+            android:id="@+id/btnPolicy"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/bg_focus_long"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="20dp"
+                android:src="@drawable/ic_settings_policy" />
+
+            <com.meskiep.vaithat.core.custom.text.StrokeTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:fontFamily="@font/cookies"
+                android:gravity="start"
+                android:text="@string/privacy_policy"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                app:strokeColor="@color/green_003B50"
+                app:strokeJoinStyle="round"
+                app:strokeMiter="5dp"
+                app:strokeWidth="2dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

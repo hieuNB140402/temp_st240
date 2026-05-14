@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.home.HomeActivity">
+
+    <include layout="@layout/layout_background" />
+
+    <!--    flActionBar-->
+    <FrameLayout
+        android:id="@+id/flActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include
+            android:id="@+id/actionBar"
+            layout="@layout/layout_actionbar" />
+    </FrameLayout>
+
+    <!--    imvAppName-->
+    <ImageView
+        android:id="@+id/imvAppName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="-10dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/img_splash_top"
+        app:layout_constraintTop_toBottomOf="@+id/flActionBar" />
+
+    <!--    rcvHome-->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcvHome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="8dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintTop_toBottomOf="@+id/imvAppName"
+        app:spanCount="2"
+        tools:itemCount="4"
+        tools:listitem="@layout/item_home_feature" />
+
+
+    <!--    flNativeCollab-->
+    <!--    <FrameLayout-->
+    <!--        android:id="@+id/flNativeCollab"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent" />-->
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp">
+
+    <!--    lnlThumbBg-->
+    <LinearLayout
+        android:id="@+id/lnlThumbBg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/img_home_bg_1"
+        android:orientation="vertical"
+        android:weightSum="156"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!--        imvThumbImage-->
+        <ImageView
+            android:id="@+id/imvThumbImage"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="120"
+            android:scaleType="fitCenter"
+            android:src="@drawable/img_home_thumb_1" />
+
+        <!--        tvThumbText-->
+        <com.meskiep.vaithat.core.custom.text.StrokeTextView
+            android:id="@+id/tvThumbText"
+            style="@style/single_marquee"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="30"
+            android:fontFamily="@font/cookies"
+            android:gravity="center"
+            android:paddingHorizontal="8dp"
+            android:text="@string/create_emoji"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:strokeColor="@color/green_003B50"
+            app:strokeJoinStyle="round"
+            app:strokeMiter="5dp"
+            app:strokeWidth="2dp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

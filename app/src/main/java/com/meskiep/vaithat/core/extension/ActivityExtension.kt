@@ -1,0 +1,25 @@
+package com.meskiep.vaithat.core.extension
+
+import android.app.Activity
+import android.content.Intent
+import androidx.core.app.ShareCompat
+import androidx.core.net.toUri
+import com.meskiep.vaithat.core.helper.RateHelper
+import com.meskiep.vaithat.core.helper.SharePreferenceHelper
+import com.meskiep.vaithat.core.utils.state.RateState
+
+fun Activity.shareApp() {
+    ShareCompat.IntentBuilder.from(this).setType("text/plain").setChooserTitle("Chooser title")
+        .setText("http://play.google.com/store/apps/details?id=" + (this).packageName)
+        .startChooser()
+}
+
+fun Activity.policy() {
+    val url = "https://sites.google.com/view/clothes-maker-skin-editor-rbx/home"
+    val i = Intent(Intent.ACTION_VIEW)
+    i.data = url.toUri()
+    startActivity(i)
+}
+fun Activity.rateApp(sharePreference: SharePreferenceHelper, onRateResult: (RateState) -> Unit = {}) {
+    RateHelper.showRateDialog(this, sharePreference, onRateResult)
+}
