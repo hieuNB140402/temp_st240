@@ -228,6 +228,17 @@ object MediaHelper {
         }
     }
 
+    inline fun <reified T> readModelFromFileRealPath(context: Context, filePath: String): T? {
+        return try {
+            val file = File(filePath)
+            val json = file.readText()
+            Gson().fromJson(json, T::class.java)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
     fun checkFileInternal(context: Context, fileName: String): Boolean {
         val file = File(context.filesDir, fileName)
         return file.exists() || file.length() > 0

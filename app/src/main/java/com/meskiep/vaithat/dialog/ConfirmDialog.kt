@@ -18,9 +18,8 @@ class ConfirmDialog(val context: Activity, val title: Int, val description: Int,
     override val isCancelableByBack: Boolean
         get() = false
 
-
-    var onNoClick: (() -> Unit) = {}
     var onYesClick: (() -> Unit) = {}
+
     override fun initView() {
         initText()
         initLayout()
@@ -49,12 +48,17 @@ class ConfirmDialog(val context: Activity, val title: Int, val description: Int,
     private fun initLayout() {
         binding.loDoubleButton.apply {
             btnLeft.setTextWithOption(context.strings(R.string.no))
-            btnRight.setTextWithOption(context.strings(R.string.yes))
 
-            if (isError) {
+
+            val rightTextContent = if (isError) {
                 btnLeft.gone()
                 btnRight.margin("horizontal", 80)
+                R.string.ok
+            } else {
+                R.string.yes
             }
+
+            btnRight.setTextWithOption(context.strings(rightTextContent))
         }
     }
 }

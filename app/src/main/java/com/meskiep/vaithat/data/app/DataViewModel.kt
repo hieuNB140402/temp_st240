@@ -28,8 +28,8 @@ import kotlin.collections.toCollection
 class DataViewModel @Inject constructor(val dataRepository: DataRepository) : ViewModel() {
     // Flow Declaration
     //==================================================================================================================
-    private val _allData = MutableStateFlow<ArrayList<DataCharacter>>(arrayListOf())
-    val allData: StateFlow<ArrayList<DataCharacter>> = _allData.asStateFlow()
+    private val _isDataCallSuccess = MutableStateFlow(false)
+    val isDataCallSuccess = _isDataCallSuccess.asStateFlow()
 
 
     // Normal Declaration
@@ -37,11 +37,14 @@ class DataViewModel @Inject constructor(val dataRepository: DataRepository) : Vi
 
     // Getter Setter
     //==================================================================================================================
+    private fun setIsDataCallSuccess(status: Boolean) {
+        _isDataCallSuccess.value = status
+    }
 
     // Function feature
     //==================================================================================================================
     fun ensureData(context: Context) {
-        if (_allData.value.isEmpty()) {
+        if (!_isDataCallSuccess.value) {
             saveAndReadData(context)
         }
     }
@@ -50,7 +53,7 @@ class DataViewModel @Inject constructor(val dataRepository: DataRepository) : Vi
         viewModelScope.launch(Dispatchers.IO) {
             val timeStart = System.currentTimeMillis()
 
-            val getDataRoom = dataRepository.getAllDataCharacter()
+            val getDataRoom = getAllDataCharacter()
 
             if (getDataRoom.isEmpty()) {
                 if (InternetHelper.isInternetAvailable(context)) {
@@ -58,12 +61,14 @@ class DataViewModel @Inject constructor(val dataRepository: DataRepository) : Vi
                         when (state) {
                             CallApiState.Loading -> {}
                             is CallApiState.Error -> eLog("getAllParts: ${state.e}")
-                            is CallApiState.Success -> attachData(state.models)
+                            is CallApiState.Success -> setIsDataCallSuccess(true)
                         }
                     }
+                } else {
+                    setIsDataCallSuccess(false)
                 }
             } else {
-                attachData(getDataRoom)
+                setIsDataCallSuccess(true)
             }
 
             val timeEnd = System.currentTimeMillis()
@@ -71,23 +76,19 @@ class DataViewModel @Inject constructor(val dataRepository: DataRepository) : Vi
         }
     }
 
-    fun attachData(getDataRoom: List<DataCharacter>) {
-        getDataRoom.sortedBy { it.level }
-        _allData.value = getDataRoom.toCollection(ArrayList())
-    }
-
     suspend fun regetData(context: Context): Flow<CallApiState<DataCharacter>> = flow {
         deleteAllDataCharacterRoom()
-        deleteAllDataCharacterInternal(context)
+        deleteAllFileInternal(context, ValueKey.DATA_CHARACTER_ALBUM)
+
 
         dataRepository.getAllParts(context).collect { state ->
             emit(state)
         }
     }
 
-    suspend fun deleteAllDataCharacterInternal(context: Context) {
+    suspend fun deleteAllFileInternal(context: Context, folder: String) {
         try {
-            val folder = File(context.filesDir, ValueKey.DATA_CHARACTER_ALBUM)
+            val folder = File(context.filesDir, folder)
 
             if (folder.exists()) {
                 folder.deleteRecursively()
@@ -101,8 +102,20 @@ class DataViewModel @Inject constructor(val dataRepository: DataRepository) : Vi
     }
 
     // Room
+    // Data Character
+    // ==================================================
     suspend fun deleteAllDataCharacterRoom() {
         dataRepository.deleteAllDataCharacter()
     }
 
+    suspend fun getAllDataCharacter(): List<DataCharacter> {
+        return dataRepository.getAllDataCharacter()
+    }
+
+    // Edit Character
+    // ==================================================
+    suspend fun deleteAllEditCharacterRoom(context: Context) {
+        dataRepository.deleteAllEditCharacter()
+        deleteAllFileInternal(context, ValueKey.EDIT_CHARACTER_ALBUM)
+    }
 }

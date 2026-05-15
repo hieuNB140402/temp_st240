@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.meskiep.vaithat.core.base.BaseActivity
+import com.meskiep.vaithat.core.extension.appVersionName
 import com.meskiep.vaithat.core.helper.InternetHelper
 import com.meskiep.vaithat.core.utils.state.CallApiState
 import com.meskiep.vaithat.data.app.DataViewModel
@@ -52,6 +53,8 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
 //        }
 
         lifecycleScope.launch(Dispatchers.IO) {
+            checkCurrentVersion()
+
             if (InternetHelper.isInternetAvailable(this@SplashActivity)) {
                 dataViewModel.regetData(this@SplashActivity).collect { state ->
                     when (state) {
@@ -83,15 +86,19 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
 
     // Handle
     //==================================================================================================================
-
+    private suspend fun checkCurrentVersion(){
+        val currentVersion = sharePreference.getCurrentVersion()
+        if (currentVersion != appVersionName()){
+            dataViewModel.deleteAllEditCharacterRoom(this)
+        }
+    }
     // Observable
     //==================================================================================================================
 
     // Result + Permission
     //==================================================================================================================
     @SuppressLint("MissingSuperCall", "GestureBackNavigation")
-    override fun onBackPressed() {
-    }
+    override fun onBackPressed() {}
 
 
     // Ads

@@ -20,10 +20,10 @@
     <!--    tvCenter-->
     <TextView
         android:id="@+id/tvCenter"
+        style="@style/normal_text_single_marquee"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="4dp"
-        style="@style/normal_text_single_marquee"
         android:gravity="center"
         android:text="@string/language"
         android:textSize="28sp"
@@ -54,6 +54,7 @@
 
     <!--    btnActionBarCenterLeft-->
     <ImageView
+        android:id="@+id/btnActionBarCenterLeft"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginStart="32dp"
@@ -67,6 +68,7 @@
 
     <!--    btnActionBarCenterRight-->
     <ImageView
+        android:id="@+id/btnActionBarCenterRight"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginEnd="32dp"
@@ -102,10 +104,11 @@
 
     <!--    btnActionBarRightText-->
     <FrameLayout
-        android:layout_width="72dp"
-        android:layout_height="32dp"
+        android:id="@+id/btnActionBarRightText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/bg_unfocus_very_short"
+        android:background="@drawable/bg_focus_very_short"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/btnActionBarLeft"
         app:layout_constraintEnd_toEndOf="parent"
@@ -113,11 +116,15 @@
 
         <!--        tvActionBarRightText-->
         <com.meskiep.vaithat.core.custom.text.StrokeTextView
+            android:id="@+id/tvActionBarRightText"
             style="@style/single_marquee"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:fontFamily="@font/cookies"
             android:gravity="center"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"
             android:text="@string/save"
             android:textColor="@color/gray_B2717171"
             android:textSize="16sp"

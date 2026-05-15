@@ -21,6 +21,9 @@ interface DataCharacterDAO {
     @Query("SELECT * FROM data_character WHERE id = :id")
     suspend fun selectDataCharacterById(id: Int): DataCharacter
 
+    @Query("SELECT * FROM data_character WHERE dataName = :dataName")
+    suspend fun selectDataCharacterByDataName(dataName: String): DataCharacter
+
     // Update
     @Update
     suspend fun updateDataCharacter(dataCharacter: DataCharacter)

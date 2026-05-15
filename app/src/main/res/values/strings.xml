@@ -76,4 +76,16 @@
     <string name="the_closer_your_character_looks_to_the_random_image_the_higher_your_final_score_will_be_pay_attention_to_small_details_to_achieve_the_best_cosplay_result">The Closer Your Character Looks To The Random Image, The Higher Your Final Score Will Be. Pay Attention To Small Details To Achieve The Best Cosplay Result.</string>
     <string name="processing_please_wait">Processing, Please Wait...</string>
     <string name="category">Category</string>
+    <string name="oops">Oops!</string>
+    <string name="ok">Ok</string>
+    <string name="an_error_occurred">An error occurred, please try again later.</string>
+    <string name="have_not_saved_it_yet_do_you_want_to_exit">Have Not Saved It Yet, Do You Want To Exit?</string>
+    <string name="reset">Reset</string>
+    <string name="do_you_want_to_reset_all">Do You Want To Reset All?</string>
+    <string name="add_image">Add Image</string>
+    <string name="color">Color</string>
+    <string name="image">Image</string>
+    <string name="text">Text</string>
+    <string name="type_your_content">Type You Content</string>
+    <string name="font">Font</string>
 </resources>

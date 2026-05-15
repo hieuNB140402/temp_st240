@@ -14,6 +14,8 @@ import com.meskiep.vaithat.core.utils.state.CallApiState
 import com.meskiep.vaithat.core.utils.state.HandleState
 import com.meskiep.vaithat.data.local.data_character.DataCharacter
 import com.meskiep.vaithat.data.local.data_character.DataCharacterDAO
+import com.meskiep.vaithat.data.local.edit.EditCharacter
+import com.meskiep.vaithat.data.local.edit.EditCharacterDAO
 import com.meskiep.vaithat.data.model.DataAPI
 import com.meskiep.vaithat.data.model.PathAPI
 import com.meskiep.vaithat.data.model.custom.ColorModel
@@ -27,22 +29,56 @@ import java.io.File
 import javax.inject.Inject
 
 
-class DataRepository @Inject constructor(private val dataCharacterDAO: DataCharacterDAO) {
+class DataRepository @Inject constructor(
+    private val dataCharacterDAO: DataCharacterDAO,
+    private val editCharacterDAO: EditCharacterDAO
+) {
 
     // Room
+    // ===========================================================================================================================
+
+    // Data Character
+    // ==================================================
+
+    // Inset
+    suspend fun insertDataCharacterList(dataCharacterList: List<DataCharacter>) {
+        dataCharacterDAO.insertDataCharacterList(dataCharacterList)
+    }
+
+    // Get
     suspend fun getAllDataCharacter(): List<DataCharacter> {
         return dataCharacterDAO.getAllDataCharacter()
     }
 
-    suspend fun insertDataCharacterList(clothesSavedList: List<DataCharacter>) {
-        dataCharacterDAO.insertDataCharacterList(clothesSavedList)
+    suspend fun selectDataCharacterByDataName(dataName: String): DataCharacter {
+        return dataCharacterDAO.selectDataCharacterByDataName(dataName)
     }
 
+    // Delete
     suspend fun deleteAllDataCharacter() {
         dataCharacterDAO.deleteAllDataCharacter()
     }
 
+    // Edit Character
+    // ==================================================
+
+    // Insert
+    suspend fun insertEditCharacter(editCharacter: EditCharacter) {
+        editCharacterDAO.insertEditCharacter(editCharacter)
+    }
+
+    // Get
+    suspend fun getAllDataCharacterDesc(): List<EditCharacter> {
+        return editCharacterDAO.getAllDataCharacterDesc()
+    }
+
+    // Get
+    suspend fun deleteAllEditCharacter() {
+        editCharacterDAO.deleteAllEditCharacter()
+    }
+
     // Other
+    // ===========================================================================================================================
     suspend fun getAllParts(context: Context): Flow<CallApiState<DataCharacter>> = flow {
         Log.d("nbhieu", "API Calling...")
         emit(CallApiState.Loading)

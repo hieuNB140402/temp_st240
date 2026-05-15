@@ -103,7 +103,7 @@
                 android:paddingHorizontal="12dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
-                tools:listitem="@layout/item_dialog_font" />
+                tools:listitem="@layout/item_dialog_text_font" />
 
             <LinearLayout
                 android:layout_width="match_parent"

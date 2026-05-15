@@ -17,9 +17,9 @@ class LanguageAdapter(val context: Context) : BaseAdapter<LanguageModel, ItemLan
             loadImage(item.flag, imvFlag, false)
 
             val (solidColor, strokeColor, res) = if (item.activate) {
-                Triple(R.color.white, R.color.green_003B50, R.drawable.bg_focus_long)
+                Triple(R.color.white, R.color.green_003B50, R.drawable.bg_20_button_focus_app)
             } else {
-                Triple(R.color.green_003B50, R.color.white, R.drawable.bg_unfocus_long)
+                Triple(R.color.green_003B50, R.color.white, R.drawable.bg_20_button_unfocus_app)
             }
 
             tvLang.apply {

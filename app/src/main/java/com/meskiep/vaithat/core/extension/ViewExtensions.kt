@@ -149,6 +149,11 @@ fun ImageView.setImageWithOption(res: Int) {
     this.visible()
 }
 
+fun View.setBackgroundWithOption(res: Int) {
+    this.setBackgroundResource(res)
+    this.visible()
+}
+
 fun TextView.setTextWithOption(text: String, isCenter: Boolean = true) {
     this.text = text
     this.visible()
@@ -174,7 +179,12 @@ fun View.margin(margin: String, distance: Int) {
             params.rightMargin = distance
         }
 
-        else -> {}
+        else -> {
+            params.topMargin = distance
+            params.leftMargin = distance
+            params.rightMargin = distance
+            params.bottomMargin = distance
+        }
     }
 
     this.layoutParams = params

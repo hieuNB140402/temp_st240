@@ -3,13 +3,13 @@ package com.meskiep.vaithat.data.local
 import android.content.Context
 import androidx.room.Room
 import com.meskiep.vaithat.data.local.data_character.DataCharacterDAO
+import com.meskiep.vaithat.data.local.edit.EditCharacterDAO
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -24,13 +24,13 @@ object DatabaseModule {
         ).build()
     }
 
-//    @Provides
-//    fun provideFingerDAO(appDatabase: AppDatabase): ClothesSavedDAO {
-//        return appDatabase.clothesSavedDao()
-//    }
-
     @Provides
     fun provideDataCharacterDAO(appDatabase: AppDatabase): DataCharacterDAO {
         return appDatabase.dataCharacterDao()
+    }
+
+    @Provides
+    fun provideEditCharacterDAO(appDatabase: AppDatabase): EditCharacterDAO {
+        return appDatabase.editCharacterDao()
     }
 }

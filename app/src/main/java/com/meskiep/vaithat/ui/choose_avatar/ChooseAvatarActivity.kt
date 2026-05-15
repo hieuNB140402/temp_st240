@@ -1,6 +1,7 @@
 package com.meskiep.vaithat.ui.choose_avatar
 
 
+import android.content.Intent
 import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -8,15 +9,23 @@ import com.meskiep.vaithat.R
 import com.meskiep.vaithat.core.base.BaseActivity
 import com.meskiep.vaithat.core.extension.checkInternet
 import com.meskiep.vaithat.core.extension.handleBackLeftToRight
+import com.meskiep.vaithat.core.extension.launchIO
 import com.meskiep.vaithat.core.extension.setImageWithOption
 import com.meskiep.vaithat.core.extension.setTextWithOption
+import com.meskiep.vaithat.core.extension.startIntentRightToLeft
 import com.meskiep.vaithat.core.extension.tap
+import com.meskiep.vaithat.core.helper.AnimationHelper
+import com.meskiep.vaithat.core.utils.key.IntentKey
+import com.meskiep.vaithat.core.utils.key.ValueKey
 import com.meskiep.vaithat.data.app.DataViewModel
 import com.meskiep.vaithat.data.local.data_character.DataCharacter
 import com.meskiep.vaithat.databinding.ActivityChooseAvatarBinding
+import com.meskiep.vaithat.ui.customize.CustomizeActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.collections.isNotEmpty
 
 @AndroidEntryPoint
@@ -36,7 +45,7 @@ class ChooseAvatarActivity : BaseActivity<ActivityChooseAvatarBinding>() {
     override fun dataObservable() {
         lifecycleScope.launch {
             launch { showLoading() }
-            launch { dataViewModel.allData.collect { list -> setupLoadDataSuccess(list) } }
+            launch { dataViewModel.isDataCallSuccess.collect { isDataCallSuccess -> setupLoadDataSuccess(isDataCallSuccess) } }
         }
     }
 
@@ -68,19 +77,29 @@ class ChooseAvatarActivity : BaseActivity<ActivityChooseAvatarBinding>() {
 
     private fun handleItemClick(model: DataCharacter) {
         checkInternet {
+            val nextScreen = Intent(this, CustomizeActivity::class.java)
+            nextScreen.apply {
+                putExtra(IntentKey.AVATAR_NAME_KEY, model.dataName)
+                getIntExtra(IntentKey.CUSTOM_STATUS_PLAY_KEY, ValueKey.CREATE)
+            }
+            val anim = AnimationHelper.intentAnimRL(this)
 //            logEvent("click_item_${model.dataName}", model.avatar)
-//            startIntentRightToLeft(CustomizeActivity::class.java, model.dataName)
+            startActivity(nextScreen, anim.toBundle())
         }
     }
 
     // Observable
     //==================================================================================================================
-    private suspend fun setupLoadDataSuccess(list: ArrayList<DataCharacter>) {
-        if (list.isNotEmpty()) {
-            delay(300)
-            dismissLoading()
-            avatarAdapter.submitList(list)
-        }
+    private fun setupLoadDataSuccess(isDataCallSuccess: Boolean) {
+        if (!isDataCallSuccess) return
+        launchIO(
+            blockIO = { dataViewModel.getAllDataCharacter() },
+            blockMain = { list ->
+                delay(300)
+                dismissLoading()
+                avatarAdapter.submitList(list)
+            }
+        )
     }
 
     // Result + Permission

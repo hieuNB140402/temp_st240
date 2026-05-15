@@ -1,6 +1,7 @@
 package com.meskiep.vaithat.core.extension
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import androidx.core.app.ShareCompat
 import androidx.core.net.toUri
@@ -23,3 +24,6 @@ fun Activity.policy() {
 fun Activity.rateApp(sharePreference: SharePreferenceHelper, onRateResult: (RateState) -> Unit = {}) {
     RateHelper.showRateDialog(this, sharePreference, onRateResult)
 }
+
+fun Context.appVersionName(): String = packageManager.getPackageInfo(packageName, 0).versionName ?: ""
+

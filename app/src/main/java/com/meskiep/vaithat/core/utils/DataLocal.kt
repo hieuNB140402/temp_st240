@@ -1,16 +1,12 @@
 package com.meskiep.vaithat.core.utils
 
-import android.R.attr.path
 import android.content.Context
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.MutableLiveData
 import com.meskiep.vaithat.R
-import com.meskiep.vaithat.core.utils.key.AssetsKey
 import com.meskiep.vaithat.data.model.IntroModel
 import com.meskiep.vaithat.data.model.LanguageModel
 import com.meskiep.vaithat.data.model.SelectedModel
 import com.facebook.shimmer.Shimmer
-import com.google.common.collect.Multimaps.index
 import com.meskiep.vaithat.core.utils.key.ValueKey
 import com.meskiep.vaithat.data.model.HomeFeatureModel
 
@@ -22,7 +18,6 @@ object DataLocal {
     var lastClickTime = 0L
 
     var isFailBaseURL = false
-    var isCallDataAlready = false
 
     fun getLanguageList(): ArrayList<LanguageModel> {
         return arrayListOf(
@@ -67,16 +62,18 @@ object DataLocal {
         )
     }
 
-    val bottomNavigationNotSelect = arrayListOf(
-        R.drawable.ic_home,
-        R.drawable.ic_my_creation,
-        R.drawable.ic_settings,
+    val addCharacterBottomNavigationUnselect = arrayListOf(
+        R.drawable.ic_add_character_background_unselect,
+        R.drawable.ic_add_character_sticker_unselect,
+        R.drawable.ic_add_character_speech_unselect,
+        R.drawable.ic_add_character_text_unselect,
     )
 
-    val bottomNavigationSelected = arrayListOf(
-        R.drawable.ic_home_selected,
-        R.drawable.ic_my_creation_selected,
-        R.drawable.ic_settings_selected,
+    val addCharacterBottomNavigationSelected = arrayListOf(
+        R.drawable.ic_add_character_background_selected,
+        R.drawable.ic_add_character_sticker_selected,
+        R.drawable.ic_add_character_speech_selected,
+        R.drawable.ic_add_character_text_selected,
     )
 
     fun getTextFontDefault(): ArrayList<SelectedModel> {
@@ -106,21 +103,6 @@ object DataLocal {
             SelectedModel(color = ContextCompat.getColor(context, R.color.color_6)),
             SelectedModel(color = ContextCompat.getColor(context, R.color.color_7)),
             SelectedModel(color = ContextCompat.getColor(context, R.color.color_8))
-        )
-    }
-
-    fun getTrendingHome(): List<SelectedModel> {
-        val preDomain = AssetsKey.TRENDING_ASSET
-        return listOf(
-            SelectedModel(path = "$preDomain/1.png", color = R.drawable.img_trending_1),
-            SelectedModel(path = "$preDomain/2.png", color = R.drawable.img_trending_2),
-            SelectedModel(path = "$preDomain/3.png", color = R.drawable.img_trending_3),
-            SelectedModel(path = "$preDomain/4.png", color = R.drawable.img_trending_4),
-            SelectedModel(path = "$preDomain/5.png", color = R.drawable.img_trending_5),
-            SelectedModel(path = "$preDomain/6.png", color = R.drawable.img_trending_6),
-            SelectedModel(path = "$preDomain/7.png", color = R.drawable.img_trending_7),
-            SelectedModel(path = "$preDomain/8.png", color = R.drawable.img_trending_8),
-            SelectedModel(path = "$preDomain/9.png", color = R.drawable.img_trending_9),
         )
     }
 

@@ -1,5 +1,6 @@
 package com.meskiep.vaithat.core.extension
 
+import android.R.attr.path
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -16,37 +17,72 @@ import com.meskiep.vaithat.core.utils.DataLocal
 import java.io.File
 
 
-fun loadImage(path: String, imageView: ImageView, isLoadShimmer: Boolean = true) {
+fun loadImage(path: Any, imageView: ImageView, isLoadShimmer: Boolean = true) {
     val shimmerDrawable = ShimmerDrawable().apply {
         setShimmer(DataLocal.shimmer)
     }
-    if (isLoadShimmer){
+    if (isLoadShimmer) {
         Glide.with(imageView.context).load(path).placeholder(shimmerDrawable).error(shimmerDrawable).into(imageView)
-    }else{
+    } else {
         Glide.with(imageView.context).load(path).into(imageView)
     }
 }
 
-fun loadImage(path: Int, imageView: ImageView, isLoadShimmer: Boolean = true) {
+fun loadImage(path: Any, imageView: ImageView, override: Int, isLoadShimmer: Boolean = true) {
     val shimmerDrawable = ShimmerDrawable().apply {
         setShimmer(DataLocal.shimmer)
     }
-    if (isLoadShimmer){
-        Glide.with(imageView.context).load(path).placeholder(shimmerDrawable).error(shimmerDrawable).into(imageView)
-    }else{
-        Glide.with(imageView.context).load(path).into(imageView)
+    if (isLoadShimmer) {
+        Glide.with(imageView.context).load(path)
+            .override(override, override)
+            .placeholder(shimmerDrawable)
+            .error(shimmerDrawable)
+            .into(imageView)
+    } else {
+        Glide.with(imageView.context).load(path)
+            .override(override, override)
+            .error(shimmerDrawable)
+            .into(imageView)
     }
 }
 
-fun loadImage(path: Any, imageView: ImageView, onShowLoading: (() -> Unit)? = null, onDismissLoading: (() -> Unit)? = null){
+//fun loadImage(path: String, imageView: ImageView, isLoadShimmer: Boolean = true) {
+//    val shimmerDrawable = ShimmerDrawable().apply {
+//        setShimmer(DataLocal.shimmer)
+//    }
+//    if (isLoadShimmer){
+//        Glide.with(imageView.context).load(path).placeholder(shimmerDrawable).error(shimmerDrawable).into(imageView)
+//    }else{
+//        Glide.with(imageView.context).load(path).into(imageView)
+//    }
+//}
+//
+//fun loadImage(path: Int, imageView: ImageView, isLoadShimmer: Boolean = true) {
+//    val shimmerDrawable = ShimmerDrawable().apply {
+//        setShimmer(DataLocal.shimmer)
+//    }
+//    if (isLoadShimmer){
+//        Glide.with(imageView.context).load(path).placeholder(shimmerDrawable).error(shimmerDrawable).into(imageView)
+//    }else{
+//        Glide.with(imageView.context).load(path).into(imageView)
+//    }
+//}
+
+fun loadImage(path: Any, imageView: ImageView, onShowLoading: (() -> Unit)? = null, onDismissLoading: (() -> Unit)? = null) {
     onShowLoading?.invoke()
-    Glide.with(imageView.context).load(path).listener(object : RequestListener<Drawable>{
+    Glide.with(imageView.context).load(path).listener(object : RequestListener<Drawable> {
         override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable?>, isFirstResource: Boolean): Boolean {
             onDismissLoading?.invoke()
             return false
         }
 
-        override fun onResourceReady(resource: Drawable, model: Any, target: Target<Drawable?>?, dataSource: DataSource, isFirstResource: Boolean): Boolean {
+        override fun onResourceReady(
+            resource: Drawable,
+            model: Any,
+            target: Target<Drawable?>?,
+            dataSource: DataSource,
+            isFirstResource: Boolean
+        ): Boolean {
             onDismissLoading?.invoke()
             return false
         }
@@ -64,7 +100,7 @@ fun ImageView.loadImageFromFile(path: String) {
     request.into(this)
 }
 
-fun loadThumbnail(view: ImageView, url: String){
+fun loadThumbnail(view: ImageView, url: String) {
     val file = File(url)
 
     Glide.with(view.context)

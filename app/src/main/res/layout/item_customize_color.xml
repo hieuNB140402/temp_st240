@@ -14,7 +14,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!--        cvColor-->
         <androidx.cardview.widget.CardView
+            android:id="@+id/cvColor"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:cardBackgroundColor="@color/transparent"
@@ -36,8 +38,8 @@
             android:id="@+id/vFocus"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
-            android:background="@drawable/bg_1000_stroke_green_00445c" />
+            android:background="@drawable/bg_1000_stroke_green_00445c"
+            android:visibility="gone" />
     </FrameLayout>
 
 

@@ -77,7 +77,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/bg_focus_long">
+                android:background="@drawable/bg_100_button_focus_app_long">
 
                 <com.meskiep.vaithat.core.custom.text.StrokeTextView
                     android:layout_width="wrap_content"
@@ -121,7 +121,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/bg_focus_long">
+                android:background="@drawable/bg_100_button_focus_app_long">
 
                 <com.meskiep.vaithat.core.custom.text.StrokeTextView
                     android:layout_width="wrap_content"

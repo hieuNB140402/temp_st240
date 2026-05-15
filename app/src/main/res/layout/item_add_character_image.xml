@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="4dp"
+            android:layout_margin="4dp"
+            app:cardElevation="0dp">
+
+            <!--            lnlAddImage-->
+            <LinearLayout
+                android:id="@+id/lnlAddImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/ic_add_character_add_image" />
+
+                <!--                tvAddImage-->
+                <TextView
+                    android:id="@+id/tvAddImage"
+                    style="@style/normal_text_single_marquee"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+
+                    android:textColor="@color/green_00838F"
+                    android:paddingHorizontal="3dp"
+                    android:paddingVertical="1dp"
+                    android:text="@string/add_image"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <!--        imvImage-->
+            <ImageView
+                android:id="@+id/imvImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
+
+        </androidx.cardview.widget.CardView>
+
+        <!--        vFocus-->
+        <View
+            android:id="@+id/vFocus"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="3dp"
+            android:background="@drawable/bg_4_stroke_green_003b50_3" />
+
+    </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

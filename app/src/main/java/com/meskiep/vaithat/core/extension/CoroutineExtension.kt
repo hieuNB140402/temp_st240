@@ -30,6 +30,18 @@ fun <T> LifecycleOwner.launchIO(blockIO: suspend () -> T, blockMain: (suspend (T
     }
 }
 
+fun <T, Y> LifecycleOwner.launchIO(blockIO: suspend () -> Pair<T, Y>, blockMain: (suspend (T, Y) -> Unit)? = null) {
+    lifecycleScope.launch(Dispatchers.IO) {
+        val (t, y) = blockIO()
+
+        blockMain?.let {
+            withContext(Dispatchers.Main) {
+                it(t, y)
+            }
+        }
+    }
+}
+
 fun <T, Y, U> LifecycleOwner.launchIO(blockIO: suspend () -> Triple<T, Y, U>, blockMain: (suspend (T, Y, U) -> Unit)? = null) {
     lifecycleScope.launch(Dispatchers.IO) {
         val (t, y, u) = blockIO()
