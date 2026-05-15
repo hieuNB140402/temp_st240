@@ -1,6 +1,7 @@
 package com.meskiep.vaithat.core.utils.key
 
 object AssetsKey {
+
     const val ASSET_MANAGER = "file:///android_asset"
 
     const val TRENDING_ASSET = "trending"
@@ -8,5 +9,6 @@ object AssetsKey {
     const val STICKER_ASSET = "sticker"
     const val EMOJI_ASSET = "emoji"
     const val SPLIT_LAYER = "-"
-
+    const val BACKGROUND_ASSET = "background"
+    const val SPEECH_ASSET = "speech"
 }

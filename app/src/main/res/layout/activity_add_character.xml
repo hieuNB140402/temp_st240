@@ -61,9 +61,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/flActionBar">
 
-        <!--        imvBackground-->
+        <!--        imvBackgroundExport-->
         <ImageView
-            android:id="@+id/imvBackground"
+            android:id="@+id/imvBackgroundExport"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop" />
@@ -99,8 +99,7 @@
             android:id="@+id/lnlBackground"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="gone">
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -110,46 +109,64 @@
                 android:orientation="horizontal">
 
                 <!--                btnBackgroundImage-->
-                <com.meskiep.vaithat.core.custom.text.StrokeTextView
+                <FrameLayout
                     android:id="@+id/btnBackgroundImage"
-                    style="@style/single_marquee"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="20dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_100_button_focus_app_medium"
-                    android:fontFamily="@font/cookies"
-                    android:gravity="center"
-                    android:paddingHorizontal="4dp"
-                    android:paddingVertical="12dp"
-                    android:text="@string/image"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    app:strokeColor="@color/green_003B50"
-                    app:strokeJoinStyle="round"
-                    app:strokeMiter="5dp"
-                    app:strokeWidth="2dp" />
+                    android:background="@drawable/bg_100_button_focus_app_medium">
 
-                <!--                btnRight-->
-                <com.meskiep.vaithat.core.custom.text.StrokeTextView
-                    android:id="@+id/btnRight"
-                    style="@style/single_marquee"
+                    <!--                    tvBackgroundImage-->
+                    <com.meskiep.vaithat.core.custom.text.StrokeTextView
+                        android:id="@+id/tvBackgroundImage"
+                        style="@style/single_marquee"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="4dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/cookies"
+                        android:gravity="center"
+                        android:paddingVertical="2dp"
+                        android:text="@string/image"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        app:strokeColor="@color/green_003B50"
+                        app:strokeJoinStyle="round"
+                        app:strokeMiter="5dp"
+                        app:strokeWidth="2dp" />
+                </FrameLayout>
+
+                <!--                btnBackgroundColor-->
+                <FrameLayout
+                    android:id="@+id/btnBackgroundColor"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_100_button_unfocus_app_medium"
-                    android:fontFamily="@font/cookies"
-                    android:gravity="center"
-                    android:paddingHorizontal="4dp"
-                    android:paddingVertical="12dp"
-                    android:text="@string/color"
-                    android:textColor="@color/green_003B50"
-                    android:textSize="20sp"
-                    app:strokeColor="@color/transparent"
-                    app:strokeJoinStyle="round"
-                    app:strokeMiter="5dp"
-                    app:strokeWidth="2dp" />
+                    android:background="@drawable/bg_100_button_unfocus_app_medium">
+
+                    <!--                tvBackgroundColor-->
+                    <com.meskiep.vaithat.core.custom.text.StrokeTextView
+                        android:id="@+id/tvBackgroundColor"
+                        style="@style/single_marquee"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="4dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/cookies"
+                        android:gravity="center"
+                        android:paddingVertical="2dp"
+                        android:text="@string/color"
+                        android:textColor="@color/green_003B50"
+                        android:textSize="20sp"
+                        app:strokeColor="@color/transparent"
+                        app:strokeJoinStyle="round"
+                        app:strokeMiter="5dp"
+                        app:strokeWidth="2dp" />
+                </FrameLayout>
             </LinearLayout>
 
             <!--            rcvBackgroundImage-->
@@ -417,10 +434,10 @@
 
 
     <!--    flNativeCollab-->
-<!--    <FrameLayout-->
-<!--        android:id="@+id/flNativeCollab"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:elevation="100dp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent" />-->
+    <!--    <FrameLayout-->
+    <!--        android:id="@+id/flNativeCollab"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:elevation="100dp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>

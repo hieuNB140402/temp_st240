@@ -47,6 +47,7 @@ import com.meskiep.vaithat.data.model.custom.NavigationModel
 import com.meskiep.vaithat.data.model.custom.SuggestionModel
 import com.meskiep.vaithat.databinding.ActivityCustomizeBinding
 import com.meskiep.vaithat.dialog.ConfirmDialog
+import com.meskiep.vaithat.ui.add_character.AddCharacterActivity
 import com.meskiep.vaithat.ui.customize.adapter.CustomizeBottomNavigationAdapter
 import com.meskiep.vaithat.ui.customize.adapter.CustomizeColorLayerAdapter
 import com.meskiep.vaithat.ui.customize.adapter.CustomizeLayerAdapter
@@ -419,8 +420,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                                 viewModel.saveEditCharacter(this@CustomizeActivity, result.path)
                                 dismissLoading()
                                 withContext(Dispatchers.Main) {
-                                    showToast("Success")
-//                                    startIntentRightToLeft(AddCharacterActivity::class.java, result.path)
+                                    startIntentRightToLeft(AddCharacterActivity::class.java, result.path)
                                 }
                             }
                         }

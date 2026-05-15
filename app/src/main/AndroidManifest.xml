@@ -25,7 +25,7 @@
         tools:replace="android:fullBackupContent"
         tools:targetApi="31">
         <activity
-            android:name=".ui.add"
+            android:name=".ui.add_character.AddCharacterActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity

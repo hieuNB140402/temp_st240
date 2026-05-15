@@ -6,13 +6,13 @@ import com.meskiep.vaithat.core.base.BaseAdapter
 import com.meskiep.vaithat.core.extension.setFont
 import com.meskiep.vaithat.core.extension.tap
 import com.meskiep.vaithat.data.model.SelectedModel
-import com.meskiep.vaithat.databinding.ItemDialogFontBinding
+import com.meskiep.vaithat.databinding.ItemDialogTextFontBinding
 
-class TextFontDialogAdapter : BaseAdapter<SelectedModel, ItemDialogFontBinding>(ItemDialogFontBinding::inflate) {
+class TextFontDialogAdapter : BaseAdapter<SelectedModel, ItemDialogTextFontBinding>(ItemDialogTextFontBinding::inflate) {
     var onTextFontClick: ((Int, Int) -> Unit) = { _, _ -> }
     private var currentSelected = 0
 
-    override fun onBind(binding: ItemDialogFontBinding, item: SelectedModel, position: Int) {
+    override fun onBind(binding: ItemDialogTextFontBinding, item: SelectedModel, position: Int) {
         binding.apply {
 
             val res = if (item.isSelected) R.drawable.bg_8_solid_yellow else R.drawable.bg_8_solid_white_opacity

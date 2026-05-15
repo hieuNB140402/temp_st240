@@ -1,5 +1,4 @@
-package com.create.babycute.babymaker.ui.add_character
-
+package com.meskiep.vaithat.ui.add_character
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -7,38 +6,30 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.ViewModel
-import com.create.babycute.babymaker.core.helper.AssetHelper
-import com.create.babycute.babymaker.core.helper.BitmapHelper
-import com.create.babycute.babymaker.core.helper.MediaHelper
-import com.create.babycute.babymaker.core.utils.DataLocal
-import com.create.babycute.babymaker.core.utils.key.AssetsKey
-import com.create.babycute.babymaker.core.utils.key.ValueKey
-import com.create.babycute.babymaker.core.utils.state.SaveState
-import com.create.babycute.babymaker.data.model.SelectedModel
-import com.create.babycute.babymaker.data.model.draw.Draw
-import com.create.babycute.babymaker.data.model.draw.DrawableDraw
+import com.meskiep.vaithat.core.helper.AssetHelper
+import com.meskiep.vaithat.core.helper.BitmapHelper
+import com.meskiep.vaithat.core.helper.MediaHelper
+import com.meskiep.vaithat.core.utils.DataLocal
+import com.meskiep.vaithat.core.utils.key.AssetsKey
+import com.meskiep.vaithat.core.utils.key.ValueKey
+import com.meskiep.vaithat.core.utils.state.SaveState
+import com.meskiep.vaithat.data.model.SelectedModel
+import com.meskiep.vaithat.data.model.draw.Draw
+import com.meskiep.vaithat.data.model.draw.DrawableDraw
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.text.SimpleDateFormat
 import java.util.Date
-import kotlin.collections.first
 import kotlin.collections.forEachIndexed
 import kotlin.collections.map
-import kotlin.collections.toCollection
 
 class AddCharacterViewModel : ViewModel() {
-    var backgroundImageList: ArrayList<SelectedModel> = arrayListOf()
-    var backgroundColorList: ArrayList<SelectedModel> = arrayListOf()
-    var stickerList: ArrayList<String> = arrayListOf()
-    var speechList: ArrayList<String> = arrayListOf()
-    var textFontList: ArrayList<SelectedModel> = arrayListOf()
-    var textColorList: ArrayList<SelectedModel> = arrayListOf()
-
+    // Flow Declaration
+    //==================================================================================================================
     private val _typeNavigation = MutableStateFlow<Int>(-1)
     val typeNavigation = _typeNavigation.asStateFlow()
 
@@ -47,6 +38,15 @@ class AddCharacterViewModel : ViewModel() {
 
     private val _isFocusEditText = MutableStateFlow<Boolean>(false)
     val isFocusEditText = _isFocusEditText.asStateFlow()
+
+    // Normal Declaration
+    //==================================================================================================================
+    var backgroundImageList: List<SelectedModel> = listOf()
+    var backgroundColorList: List<SelectedModel> = listOf()
+    var stickerList: List<String> = listOf()
+    var speechList: List<String> = listOf()
+    var textFontList: List<SelectedModel> = listOf()
+    var textColorList: List<SelectedModel> = listOf()
 
     var currentDraw: Draw? = null
 
@@ -58,6 +58,8 @@ class AddCharacterViewModel : ViewModel() {
 
     var pathDefault = ""
 
+    // Getter Setter
+    //==================================================================================================================
     fun setTypeNavigation(type: Int) {
         _typeNavigation.value = type
     }
@@ -70,59 +72,42 @@ class AddCharacterViewModel : ViewModel() {
         _isFocusEditText.value = status
     }
 
+    // Function feature
+    //==================================================================================================================
+
     suspend fun loadDataDefault(context: Context) {
-        backgroundImageList.clear()
-        backgroundImageList.addAll(
-            AssetHelper.getSubfoldersAsset(context, AssetsKey.BACKGROUND_ASSET).map { SelectedModel(path = it) })
+        backgroundImageList = AssetHelper.getSubfoldersAsset(context, AssetsKey.BACKGROUND_ASSET).map { SelectedModel(path = it) }
+        backgroundColorList = DataLocal.getBackgroundColorDefault(context)
 
-        backgroundColorList.clear()
-        backgroundColorList.addAll(DataLocal.getBackgroundColorDefault(context))
+        stickerList = AssetHelper.getSubfoldersAsset(context, AssetsKey.STICKER_ASSET)
+        speechList = AssetHelper.getSubfoldersAsset(context, AssetsKey.SPEECH_ASSET)
 
-
-        stickerList.clear()
-        stickerList.addAll(
-            AssetHelper.getSubfoldersAsset(context, AssetsKey.STICKER_ASSET).toCollection(kotlin.collections.ArrayList()))
-
-
-        speechList.clear()
-        speechList.addAll(
-            AssetHelper.getSubfoldersAsset(context, AssetsKey.SPEECH_ASSET).toCollection(kotlin.collections.ArrayList()))
-
-        textFontList.clear()
-        textFontList.addAll(DataLocal.getTextFontDefault())
-        textFontList.first().isSelected = true
-
-        textColorList.clear()
-        textColorList.addAll(DataLocal.getTextColorDefault(context))
-        textColorList[1].isSelected = true
+        textFontList = DataLocal.getTextFontDefault()
+        textColorList = DataLocal.getTextColorDefault(context)
     }
 
     suspend fun updateBackgroundImageSelected(position: Int) {
-        backgroundColorList = backgroundColorList.map { it.copy(isSelected = false) }.toCollection(kotlin.collections.ArrayList())
-        backgroundImageList.forEachIndexed { index, model ->
-            model.isSelected = index == position
+        backgroundColorList = backgroundColorList.map { it.copy(isSelected = false) }
+
+        backgroundImageList = backgroundImageList.mapIndexed { index, model ->
+            model.copy(isSelected = index == position)
         }
     }
 
     suspend fun updateBackgroundColorSelected(position: Int) {
-        backgroundImageList = backgroundImageList.map { it.copy(isSelected = false) }.toCollection(kotlin.collections.ArrayList())
-        backgroundColorList.forEachIndexed { index, model ->
-            model.isSelected = index == position
+        backgroundImageList = backgroundImageList.map { it.copy(isSelected = false) }
+
+        backgroundColorList = backgroundColorList.mapIndexed { index, model ->
+            model.copy(isSelected = index == position)
         }
     }
 
     fun updateTextFontSelected(position: Int) {
-        textFontList = textFontList.map { it.copy(isSelected = false) }.toCollection(kotlin.collections.ArrayList())
-        textFontList.forEachIndexed { index, model ->
-            model.isSelected = index == position
-        }
+        textFontList = textFontList.mapIndexed { index, model -> model.copy(isSelected = position == index) }
     }
 
     fun updateTextColorSelected(position: Int) {
-        textColorList = textColorList.map { it.copy(isSelected = false) }.toCollection(kotlin.collections.ArrayList())
-        textColorList.forEachIndexed { index, model ->
-            model.isSelected = index == position
-        }
+        textColorList = textColorList.mapIndexed { index, model -> model.copy(isSelected = position == index) }
     }
 
     fun updateCurrentCurrentDraw(draw: Draw) {
@@ -137,9 +122,10 @@ class AddCharacterViewModel : ViewModel() {
         drawViewList.removeIf { it == draw }
     }
 
-    fun updatePathDefault(path: String){
+    fun updatePathDefault(path: String) {
         pathDefault = path
     }
+
     fun loadDrawableEmoji(context: Context, bitmap: Bitmap, isCharacter: Boolean = false, isText: Boolean = false): DrawableDraw {
         val drawable = bitmap.toDrawable(context.resources)
         val drawableEmoji = DrawableDraw(drawable, "${SimpleDateFormat("dd_MM_yyyy_hh_mm_ss").format(Date())}.png")
@@ -150,7 +136,6 @@ class AddCharacterViewModel : ViewModel() {
 
     fun resetDraw() {
         drawViewList.clear()
-
     }
 
     fun saveImageFromView(context: Context, view: View): Flow<SaveState> = flow {
@@ -160,4 +145,12 @@ class AddCharacterViewModel : ViewModel() {
             emit(state)
         }
     }.flowOn(Dispatchers.IO)
+
+    fun getTextColorDefault(): Int {
+        return textColorList[1].color
+    }
+
+    fun getTextFontDefault(): Int {
+        return textFontList.first().color
+    }
 }

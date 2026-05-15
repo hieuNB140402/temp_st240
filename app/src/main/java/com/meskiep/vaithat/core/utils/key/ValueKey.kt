@@ -31,5 +31,12 @@ object ValueKey {
     const val SIZE_PROGRESS_DEFAULT = 50
 
     //============================================================================================================================
+    // Add Character
+    const val IMAGE_BACKGROUND = 0
+    const val COLOR_BACKGROUND = 1
 
+    const val BACKGROUND_NAVIGATION = 0
+    const val STICKER_NAVIGATION = 1
+    const val SPEECH_NAVIGATION = 2
+    const val TEXT_NAVIGATION = 3
 }

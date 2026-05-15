@@ -21,6 +21,7 @@ class AddCharacterBackgroundColorAdapter : ListAdapter<SelectedModel, AddCharact
         fun bind(item: SelectedModel){
             binding.apply {
                 vFocus.isVisible = item.isSelected
+
                 if (bindingAdapterPosition == 0) {
                     loadImage(R.drawable.ic_add_character_add_color, imvColor)
                     root.tap { onChooseColorClick.invoke() }

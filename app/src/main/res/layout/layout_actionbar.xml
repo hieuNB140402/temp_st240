@@ -35,6 +35,7 @@
 
     <!--    btnActionBarCenter-->
     <ImageView
+        android:id="@+id/btnActionBarCenter"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:background="?attr/selectableItemBackgroundBorderless"
