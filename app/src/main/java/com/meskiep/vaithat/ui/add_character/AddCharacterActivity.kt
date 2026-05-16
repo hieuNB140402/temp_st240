@@ -22,9 +22,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.signature.ObjectKey
 import com.meskiep.vaithat.R
 import com.meskiep.vaithat.core.base.BaseActivity
+import com.meskiep.vaithat.core.extension.dLog
 import com.meskiep.vaithat.core.extension.gone
 import com.meskiep.vaithat.core.extension.handleBackLeftToRight
-import com.meskiep.vaithat.core.extension.hideNavigation
 import com.meskiep.vaithat.core.extension.hideSoftKeyboard
 import com.meskiep.vaithat.core.extension.launchIO
 import com.meskiep.vaithat.core.extension.loadImage
@@ -33,9 +33,11 @@ import com.meskiep.vaithat.core.extension.setBackgroundWithOption
 import com.meskiep.vaithat.core.extension.setFont
 import com.meskiep.vaithat.core.extension.setImageWithOption
 import com.meskiep.vaithat.core.extension.setTextWithOption
+import com.meskiep.vaithat.core.extension.showErrorDialog
 import com.meskiep.vaithat.core.extension.strings
 import com.meskiep.vaithat.core.extension.tap
 import com.meskiep.vaithat.core.extension.visible
+import com.meskiep.vaithat.core.helper.AnimationHelper
 import com.meskiep.vaithat.core.helper.BitmapHelper
 import com.meskiep.vaithat.core.helper.UnitHelper
 import com.meskiep.vaithat.core.utils.DataLocal
@@ -46,6 +48,7 @@ import com.meskiep.vaithat.core.utils.state.SaveState
 import com.meskiep.vaithat.data.model.draw.Draw
 import com.meskiep.vaithat.data.model.draw.DrawableDraw
 import com.meskiep.vaithat.databinding.ActivityAddCharacterBinding
+import com.meskiep.vaithat.dialog.AddCharacterSpeechDialog
 import com.meskiep.vaithat.dialog.ChooseColorDialog
 import com.meskiep.vaithat.dialog.ConfirmDialog
 import com.meskiep.vaithat.listener.listenerdraw.OnDrawListener
@@ -55,6 +58,7 @@ import com.meskiep.vaithat.ui.add_character.adapter.AddCharacterSpeechAdapter
 import com.meskiep.vaithat.ui.add_character.adapter.AddCharacterStickerAdapter
 import com.meskiep.vaithat.ui.add_character.adapter.AddCharacterTextColorAdapter
 import com.meskiep.vaithat.ui.add_character.adapter.AddCharacterTextFontAdapter
+import com.meskiep.vaithat.ui.view.ViewActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -126,7 +130,7 @@ class AddCharacterActivity : BaseActivity<ActivityAddCharacterBinding>() {
             actionBar.apply {
                 btnActionBarLeft.tap { confirmExit() }
                 btnActionBarCenter.tap { confirmReset() }
-                btnActionBarRight.tap { handleSave() }
+                btnActionBarRightText.tap { handleSave() }
             }
             btnBackgroundImage.tap { viewModel.setTypeBackground(ValueKey.IMAGE_BACKGROUND) }
             btnBackgroundColor.tap { viewModel.setTypeBackground(ValueKey.COLOR_BACKGROUND) }
@@ -426,15 +430,13 @@ class AddCharacterActivity : BaseActivity<ActivityAddCharacterBinding>() {
     }
 
     private fun handleSpeech(path: String) {
-//        val dialog = DialogSpeech(this, path)
-//        dialog.show()
-//        dialog.onDoneClick = { bitmap ->
-//            dialog.dismiss()
-//            hideNavigation(true)
-//            if (bitmap != null) {
-//                addDrawable("", false, bitmap)
-//            }
-//        }
+        val dialog = AddCharacterSpeechDialog(this, path)
+        dialog.show()
+        dialog.onDoneClick = { bitmap ->
+            if (bitmap != null) {
+                addDrawable("", false, bitmap)
+            }
+        }
     }
 
     private fun handleSetBackgroundColor(color: Int, position: Int) {
@@ -518,37 +520,38 @@ class AddCharacterActivity : BaseActivity<ActivityAddCharacterBinding>() {
 
     private fun handleSave() {
         binding.apply {
-//            clearFocus()
-//            lifecycleScope.launch(Dispatchers.IO) {
-//                showLoading()
-//                delay(200)
-//                viewModel.saveImageFromView(this@AddCharacterActivity, flSave).collect { result ->
-//                    when (result) {
-//                        is SaveState.Loading -> showLoading()
-//
-//                        is SaveState.Error -> {
-//                            dismissLoading(true)
-//                            withContext(Dispatchers.Main) {
-//                                showToast(R.string.save_failed_please_try_again)
-//                            }
-//                        }
-//
-//                        is SaveState.Success -> {
-//                            val intent = Intent(this@AddCharacterActivity, ViewActivity::class.java)
-//                            intent.putExtra(IntentKey.INTENT_KEY, result.path)
-//                            intent.putExtra(IntentKey.STATUS_KEY, ValueKey.MY_DESIGN)
-//                            intent.putExtra(IntentKey.TYPE_KEY, ValueKey.TYPE_SUCCESS)
-//                            val options = ActivityOptions.makeCustomAnimation(
-//                                this@AddCharacterActivity, R.anim.slide_in_right, R.anim.slide_out_left
-//                            )
-//                            dismissLoading(true)
-//                            withContext(Dispatchers.Main) {
+            clearFocus()
+            lifecycleScope.launch(Dispatchers.IO) {
+                showLoading()
+                delay(200)
+                viewModel.saveImageFromView(this@AddCharacterActivity, flSave).collect { result ->
+                    when (result) {
+                        is SaveState.Loading -> showLoading()
+                        is SaveState.Nothing -> {}
+
+                        is SaveState.Error -> {
+                            dismissLoading()
+
+                            withContext(Dispatchers.Main) {
+                                showErrorDialog()
+                            }
+                        }
+
+                        is SaveState.Success -> {
+                            val intent = Intent(this@AddCharacterActivity, ViewActivity::class.java)
+                            intent.putExtra(IntentKey.PATH_KEY, result.path)
+                            intent.putExtra(IntentKey.VIEW_TYPE_KEY, ValueKey.SUCCESS_TYPE)
+                            val options = AnimationHelper.intentAnimRL(this@AddCharacterActivity)
+                            dismissLoading()
+
+                            withContext(Dispatchers.Main) {
 //                                showInterAll { startActivity(intent, options.toBundle()) }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
+                                startActivity(intent, options.toBundle())
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -560,11 +563,11 @@ class AddCharacterActivity : BaseActivity<ActivityAddCharacterBinding>() {
         backgroundColorAdapter.submitList(viewModel.backgroundColorList)
     }
 
-    private fun submitTextFont(){
+    private fun submitTextFont() {
         textFontAdapter.submitList(viewModel.textFontList)
     }
 
-    private fun submitTextColor(){
+    private fun submitTextColor() {
         textColorAdapter.submitList(viewModel.textColorList)
     }
 
@@ -589,6 +592,8 @@ class AddCharacterActivity : BaseActivity<ActivityAddCharacterBinding>() {
 
     private fun setupTypeBackground(type: Int) {
         binding.apply {
+            val strokeWith = UnitHelper.dpToPx(this@AddCharacterActivity, 2f)
+
             when (type) {
                 ValueKey.IMAGE_BACKGROUND -> {
                     rcvBackgroundImage.visible()
@@ -598,7 +603,7 @@ class AddCharacterActivity : BaseActivity<ActivityAddCharacterBinding>() {
 
                     tvBackgroundImage.apply {
                         setTextColor(getColor(R.color.white))
-                        setStroke(UnitHelper.dpToPx(this@AddCharacterActivity, 2f), getColor(R.color.green_003B50))
+                        setStroke(strokeWith, getColor(R.color.green_003B50))
                     }
 
 
@@ -606,7 +611,7 @@ class AddCharacterActivity : BaseActivity<ActivityAddCharacterBinding>() {
 
                     tvBackgroundColor.apply {
                         setTextColor(getColor(R.color.green_003B50))
-                        setStroke(UnitHelper.dpToPx(this@AddCharacterActivity, 2f), getColor(R.color.transparent))
+                        setStroke(strokeWith, getColor(R.color.transparent))
                     }
                     submitBackgroundImage()
                 }
@@ -619,14 +624,14 @@ class AddCharacterActivity : BaseActivity<ActivityAddCharacterBinding>() {
 
                     tvBackgroundImage.apply {
                         setTextColor(getColor(R.color.green_003B50))
-                        setStroke(UnitHelper.dpToPx(this@AddCharacterActivity, 2f), getColor(R.color.transparent))
+                        setStroke(strokeWith, getColor(R.color.transparent))
                     }
 
                     btnBackgroundColor.setBackgroundResource(R.drawable.bg_100_button_focus_app_medium)
 
                     tvBackgroundColor.apply {
                         setTextColor(getColor(R.color.white))
-                        setStroke(UnitHelper.dpToPx(this@AddCharacterActivity, 2f), getColor(R.color.green_003B50))
+                        setStroke(strokeWith, getColor(R.color.green_003B50))
                     }
 
                     submitBackgroundColor()
@@ -648,7 +653,6 @@ class AddCharacterActivity : BaseActivity<ActivityAddCharacterBinding>() {
                 flFunction.layoutParams = viewModel.layoutParams
                 hideSoftKeyboard()
                 edtText.clearFocus()
-                hideNavigation()
             }
         }
     }

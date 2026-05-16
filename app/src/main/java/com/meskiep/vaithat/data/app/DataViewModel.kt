@@ -116,6 +116,6 @@ class DataViewModel @Inject constructor(val dataRepository: DataRepository) : Vi
     // ==================================================
     suspend fun deleteAllEditCharacterRoom(context: Context) {
         dataRepository.deleteAllEditCharacter()
-        deleteAllFileInternal(context, ValueKey.EDIT_CHARACTER_ALBUM)
+        deleteAllFileInternal(context, ValueKey.CHARACTER_CUSTOMIZE_ALBUM)
     }
 }

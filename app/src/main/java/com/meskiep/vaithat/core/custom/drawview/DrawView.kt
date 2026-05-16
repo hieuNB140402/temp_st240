@@ -261,7 +261,7 @@ open class DrawView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 
     fun remove(draw: Draw?): Boolean {
         if (drawList.contains(draw)) {
-            if (!draw!!.isCharacter){
+            if (!draw!!.isCharacter) {
                 drawList.remove(draw)
                 if (draw is DrawableDraw) {
                     initialScaleMap.remove(draw)
@@ -567,7 +567,7 @@ open class DrawView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         if (draw.isText) {
             draw.getMatrix().postScale(scaleFactor / 1.2f, scaleFactor / 1.2f, width / 2f, height / 2f)
         } else if (draw.isCharacter) {
-            draw.getMatrix().postScale(scaleFactor / 1.5f, scaleFactor / 1.5f, width / 2f, height / 2f)
+            draw.getMatrix().postScale(scaleFactor / 1f, scaleFactor / 1f, width / 2f, height / 2f)
         } else {
             draw.getMatrix().postScale(scaleFactor / 2f, scaleFactor / 2f, width / 2f, height / 2f)
         }
@@ -694,7 +694,13 @@ open class DrawView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                         DrawKey.BOTTOM_RIGHT -> setupMatrix(icon, x4, y4, rotation)
                     }
 
-                    icon.draw(canvas, borderPaint)
+                    if (icon.positionDefault == DrawKey.TOP_RIGHT) {
+                        if (!handlingDraw!!.isCharacter) {
+                            icon.draw(canvas, borderPaint)
+                        }
+                    } else {
+                        icon.draw(canvas, borderPaint)
+                    }
 
                 }
             }

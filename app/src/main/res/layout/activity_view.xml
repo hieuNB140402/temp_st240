@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.view.ViewActivity">
+
+    <include layout="@layout/layout_background" />
+
+    <!-- layoutActionBar -->
+    <FrameLayout
+        android:id="@+id/layoutActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include
+            android:id="@+id/actionBar"
+            layout="@layout/layout_actionbar" />
+    </FrameLayout>
+
+    <!--    tvDownloadSuccess-->
+    <com.meskiep.vaithat.core.custom.text.StrokeTextView
+        android:id="@+id/tvDownloadSuccess"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_10_stroke_green_solid_white_opacity"
+        android:fontFamily="@font/cookies"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="@string/download_successful"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutActionBar"
+        app:strokeColor="@color/green_003B50"
+        app:strokeJoinStyle="round"
+        app:strokeMiter="5dp"
+        app:strokeWidth="2dp" />
+
+    <!--    imvImage-->
+    <ImageView
+        android:id="@+id/imvImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="64dp"
+        android:src="@drawable/img_intro_1"
+        android:background="@color/black"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutActionBar" />
+
+    <!--    vBlur-->
+    <View
+        android:id="@+id/vBlur"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="-26dp"
+        android:layout_marginBottom="-26dp"
+        android:background="@drawable/bg_gradient_black"
+        app:layout_constraintBottom_toBottomOf="@+id/flBottom"
+        app:layout_constraintTop_toTopOf="@+id/flBottom" />
+
+    <!--    flBottom-->
+    <FrameLayout
+        android:id="@+id/flBottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="26dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!--        bottomBar-->
+        <include
+            android:id="@+id/bottomBar"
+            layout="@layout/layout_double_button" />
+    </FrameLayout>
+
+    <!--    flNativeCollab-->
+    <!--    <FrameLayout-->
+    <!--        android:id="@+id/flNativeCollab"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent">-->
+
+    <!--        <include layout="@layout/ads_shimmer_collap_native" />-->
+    <!--    </FrameLayout>-->
+</androidx.constraintlayout.widget.ConstraintLayout>

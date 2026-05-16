@@ -34,4 +34,10 @@ interface EditCharacterDAO {
     // Delete
     @Query("DELETE FROM edit_character")
     fun deleteAllEditCharacter()
+
+    @Query("DELETE FROM edit_character WHERE fileNameInternal = :fileNameInternal")
+    fun deleteEditCharacterByFileNameInternal(fileNameInternal: String)
+
+    @Query("DELETE FROM edit_character WHERE fileNameInternal IN (:fileNameInternals)")
+    suspend fun deleteEditCharacterByFileNameInternals(fileNameInternals: List<String>)
 }

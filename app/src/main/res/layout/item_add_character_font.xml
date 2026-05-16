@@ -40,7 +40,9 @@
                 android:textSize="18sp" />
         </androidx.cardview.widget.CardView>
 
+        <!--        vFocusOutSide-->
         <View
+            android:id="@+id/vFocusOutSide"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="5dp"

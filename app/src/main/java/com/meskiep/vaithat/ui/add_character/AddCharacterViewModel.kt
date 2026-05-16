@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.text.SimpleDateFormat
 import java.util.Date
-import kotlin.collections.forEachIndexed
 import kotlin.collections.map
 
 class AddCharacterViewModel : ViewModel() {

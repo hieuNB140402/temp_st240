@@ -573,7 +573,7 @@ class CustomizeViewModel @Inject constructor(val dataRepository: DataRepository)
             dataName = dataCustomize!!.dataName,
             thumbPath = thumbPath,
             fileNameInternal = MediaHelper.writeModelToFile<SuggestionModel>(
-                context,
+                context = context,
                 folder = ValueKey.EDIT_CHARACTER_ALBUM,
                 fileName = StringHelper.generateRandomString(5),
                 model = SuggestionModel(

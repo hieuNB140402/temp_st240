@@ -84,6 +84,8 @@ fun View.startRotation(durationEnd: Long = 500, action: () -> Unit) {
 
 // Zoom out từ 0 -> end, kèm callback khi kết thúc
 fun View.animateZoom(scaleEnd: Float, duration: Long, onEnd: (() -> Unit)? = null) {
+    this.visible()
+
     val scaleXAnimation = ObjectAnimator.ofFloat(this, View.SCALE_X, 0f, scaleEnd)
     val scaleYAnimation = ObjectAnimator.ofFloat(this, View.SCALE_Y, 0f, scaleEnd)
 
@@ -97,17 +99,19 @@ fun View.animateZoom(scaleEnd: Float, duration: Long, onEnd: (() -> Unit)? = nul
 }
 
 // Zoom in từ start -> 1f
-fun View.animateZoomIn(scaleStart: Float, duration: Long) {
-    val scaleXAnimation = ObjectAnimator.ofFloat(this, View.SCALE_X, scaleStart, 1f)
-    val scaleYAnimation = ObjectAnimator.ofFloat(this, View.SCALE_Y, scaleStart, 1f)
+fun View.animateZoomIn(scaleStart: Float, scaleEnd: Float, duration: Long, onEnd: (() -> Unit)? = null) {
+    val scaleXAnimation = ObjectAnimator.ofFloat(this, View.SCALE_X, scaleStart, scaleEnd)
+    val scaleYAnimation = ObjectAnimator.ofFloat(this, View.SCALE_Y, scaleStart, scaleEnd)
 
     AnimatorSet().apply {
         playTogether(scaleXAnimation, scaleYAnimation)
         this.duration = duration
         interpolator = AccelerateDecelerateInterpolator()
+        onEnd?.let { doOnEnd { it() } }
         start()
     }
 }
+
 fun View.animateBurstOut(duration: Long = 1000L) {
     this.scaleX = 1f
     this.scaleY = 1f

@@ -84,7 +84,7 @@ object MediaHelper {
         }
     }.flowOn(Dispatchers.IO)
 
-    fun deleteFileByPathNotFlow(pathList: ArrayList<String>) {
+    suspend fun deleteFileByPathNotFlow(pathList: List<String>) {
         try {
             for (i in 0 until pathList.size) {
                 val file = File(pathList[i])
@@ -93,7 +93,7 @@ object MediaHelper {
                 }
             }
         } catch (e: Exception) {
-            Log.e("nbhieu", "deleteFileByPathNotFlow: $e")
+            eLog("deleteFileByPathNotFlow: $e")
         }
     }
 
@@ -307,11 +307,7 @@ object MediaHelper {
         return file
     }
 
-    suspend fun saveBitmapToInternalStorage(
-        context: Context,
-        album: String,
-        bitmap: Bitmap
-    ): Flow<SaveState> = flow {
+    suspend fun saveBitmapToInternalStorage(context: Context, album: String, bitmap: Bitmap): Flow<SaveState> = flow {
         emit(SaveState.Loading)
 
         try {
@@ -322,29 +318,16 @@ object MediaHelper {
                 directory.mkdir()
             }
 
-            // 👉 Resize về 585x559
-            val resizedBitmap = Bitmap.createScaledBitmap(
-                bitmap,
-                585,
-                559,
-                true // filter (smooth)
-            )
-
             val file = File(directory, name)
 
             FileOutputStream(file).use { output ->
-                resizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
                 output.flush()
             }
 
-            // recycle bitmap cũ nếu không dùng nữa
             bitmap.recycle()
-            resizedBitmap.recycle()
 
-            val abs = file.absolutePath
-            val result = abs.substringAfter("/files/")
-
-            emit(SaveState.Success(result))
+            emit(SaveState.Success(file.absolutePath))
         } catch (e: Exception) {
             emit(SaveState.Error(e))
         }

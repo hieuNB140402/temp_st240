@@ -2,7 +2,7 @@ package com.meskiep.vaithat.core.utils.key
 
 object ValueKey {
     // Internal
-    const val DOWNLOAD_ALBUM = "RBX Skins"
+    const val DOWNLOAD_ALBUM = "Emoji & Sticker Maker"
     // Image from Customize
     const val CHARACTER_CUSTOMIZE_ALBUM = "Character Customize"
     // Folder parent
@@ -39,4 +39,17 @@ object ValueKey {
     const val STICKER_NAVIGATION = 1
     const val SPEECH_NAVIGATION = 2
     const val TEXT_NAVIGATION = 3
+
+    //============================================================================================================================
+    // View
+    const val VIEW_TYPE = 0
+    const val SUCCESS_TYPE = 1
+
+    const val EDIT_CREATION = 0
+    const val VIEW_CREATION = 1
+
+    //============================================================================================================================
+    // Share
+    const val RANDOM_IDENTIFIER_FOR_ADDING_STICKER_TO_WHATSAPP =
+        "RANDOM_IDENTIFIER_FOR_WHATSAPP_STICKER"
 }

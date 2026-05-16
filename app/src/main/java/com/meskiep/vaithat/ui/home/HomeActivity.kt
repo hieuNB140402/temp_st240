@@ -16,6 +16,7 @@ import com.meskiep.vaithat.core.utils.state.RateState
 import com.meskiep.vaithat.databinding.ActivityHomeBinding
 import com.meskiep.vaithat.ui.SettingsActivity
 import com.meskiep.vaithat.ui.choose_avatar.ChooseAvatarActivity
+import com.meskiep.vaithat.ui.my_creation.MyCreationActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -71,7 +72,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
             ValueKey.CREATION_EMOJI -> startIntentRightToLeft(ChooseAvatarActivity::class.java)
             ValueKey.EMOJI_MAKER -> startIntentRightToLeft(ChooseAvatarActivity::class.java)
             ValueKey.COSPLAY_EMOJI -> startIntentRightToLeft(ChooseAvatarActivity::class.java)
-            ValueKey.MY_CREATION -> startIntentRightToLeft(ChooseAvatarActivity::class.java)
+            ValueKey.MY_CREATION -> startIntentRightToLeft(MyCreationActivity::class.java)
         }
     }
 

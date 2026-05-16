@@ -89,4 +89,18 @@
     <string name="type_your_content">Type You Content</string>
     <string name="font">Font</string>
     <string name="null_edt">Please enter text</string>
+    <string name="download_successful">Download successful!</string>
+    <string name="share">Share</string>
+    <string name="download">Download</string>
+    <string name="delete">Delete</string>
+    <string name="are_you_sure_want_to_delete_this_item">Are You Sure Want To Delete This Item?</string>
+    <string name="my_emoji">My Emoji</string>
+    <string name="my_design">My Design</string>
+    <string name="add_to_whatsapp">Add To Whatsapp</string>
+    <string name="add_to_telegram">Add To Telegram</string>
+    <string name="no_item_here">No Item Here</string>
+    <string name="no_app_found_to_handle_this_action">No app found to handle this action</string>
+    <string name="invalid_action_msg">Application not installed</string>
+    <string name="invalid_action">Error</string>
+    <string name="please_select_an_item">Please select an item</string>
 </resources>

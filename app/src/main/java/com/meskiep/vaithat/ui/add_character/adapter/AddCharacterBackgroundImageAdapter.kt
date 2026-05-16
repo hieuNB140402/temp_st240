@@ -2,9 +2,11 @@ package com.meskiep.vaithat.ui.add_character.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.meskiep.vaithat.R
 import com.meskiep.vaithat.core.extension.gone
 import com.meskiep.vaithat.core.extension.loadImage
 import com.meskiep.vaithat.core.extension.select
@@ -31,11 +33,17 @@ class AddCharacterBackgroundImageAdapter :
                     tvAddImage.select()
                     imvImage.gone()
 
+                    vFocus.visible()
+                    vFocus.setBackgroundResource(R.drawable.bg_4_stroke_green_00838f_1)
+
                     lnlAddImage.tap { onAddImageClick.invoke() }
                 } else {
                     lnlAddImage.gone()
                     imvImage.visible()
                     loadImage(item.path, imvImage, 256)
+
+                    vFocus.isVisible = item.isSelected
+                    vFocus.setBackgroundResource(R.drawable.bg_4_stroke_green_003b50_3)
 
                     imvImage.tap { onBackgroundImageClick.invoke(item.path,  bindingAdapterPosition) }
                 }

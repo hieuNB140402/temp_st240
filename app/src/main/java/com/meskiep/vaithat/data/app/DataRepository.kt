@@ -77,6 +77,14 @@ class DataRepository @Inject constructor(
         editCharacterDAO.deleteAllEditCharacter()
     }
 
+    suspend fun deleteEditCharacterByFileNameInternal(fileNameInternal: String){
+        editCharacterDAO.deleteEditCharacterByFileNameInternal(fileNameInternal)
+    }
+
+    suspend fun deleteEditCharacterByFileNameInternals(fileNameInternals: List<String>){
+        editCharacterDAO.deleteEditCharacterByFileNameInternals(fileNameInternals)
+    }
+
     // Other
     // ===========================================================================================================================
     suspend fun getAllParts(context: Context): Flow<CallApiState<DataCharacter>> = flow {

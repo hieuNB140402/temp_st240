@@ -3,6 +3,7 @@ package com.meskiep.vaithat.ui.add_character.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,14 +13,17 @@ import com.meskiep.vaithat.core.extension.tap
 import com.meskiep.vaithat.data.model.SelectedModel
 import com.meskiep.vaithat.databinding.ItemAddCharacterFontBinding
 
-class AddCharacterTextFontAdapter(val context: Context) : ListAdapter<SelectedModel, AddCharacterTextFontAdapter.AddCharacterTextFontHolder>(AddCharacterTextFontCallback()) {
+class AddCharacterTextFontAdapter(val context: Context) :
+    ListAdapter<SelectedModel, AddCharacterTextFontAdapter.AddCharacterTextFontHolder>(AddCharacterTextFontCallback()) {
     var onTextFontClick: ((Int, Int) -> Unit) = { _, _ -> }
 
     inner class AddCharacterTextFontHolder(val binding: ItemAddCharacterFontBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: SelectedModel) {
             binding.apply {
-                val res = if (item.isSelected) R.drawable.bg_1000_stroke_green_003b50_3 else R.drawable.bg_1000_stroke_green_00838f
-                vFocus.setBackgroundResource(res)
+                val res =
+                    if (item.isSelected) R.drawable.bg_1000_stroke_green_003b50_3 else R.drawable.bg_1000_stroke_green_00838f
+                vFocus.isVisible = item.isSelected
+                vFocusOutSide.setBackgroundResource(res)
 
                 tvFont.setFont(item.color)
                 val elevation = if (item.isSelected) 4f else 0f
@@ -28,7 +32,6 @@ class AddCharacterTextFontAdapter(val context: Context) : ListAdapter<SelectedMo
             }
         }
     }
-
 
 
     override fun onCreateViewHolder(

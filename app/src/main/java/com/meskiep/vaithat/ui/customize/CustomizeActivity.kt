@@ -29,6 +29,7 @@ import com.meskiep.vaithat.core.extension.loadImage
 import com.meskiep.vaithat.core.extension.setBackgroundWithOption
 import com.meskiep.vaithat.core.extension.setImageWithOption
 import com.meskiep.vaithat.core.extension.setTextWithOption
+import com.meskiep.vaithat.core.extension.showErrorDialog
 import com.meskiep.vaithat.core.extension.startIntentRightToLeft
 import com.meskiep.vaithat.core.extension.strings
 import com.meskiep.vaithat.core.extension.tap
@@ -148,10 +149,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             CoroutineScope(Dispatchers.Main).launch {
                 dismissLoading()
 
-                val dialogExit = ConfirmDialog(this@CustomizeActivity, R.string.oops, R.string.an_error_occurred)
-                dialogExit.show()
-
-                dialogExit.onYesClick = {
+                showErrorDialog {
                     finish()
                 }
             }
@@ -390,9 +388,9 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
                     is SaveState.Error -> {
                         dismissLoading()
+
                         withContext(Dispatchers.Main) {
-                            val dialog = ConfirmDialog(this@CustomizeActivity, R.string.oops, R.string.an_error_occurred, true)
-                            dialog.show()
+                            showErrorDialog()
                         }
                     }
 

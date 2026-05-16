@@ -86,9 +86,11 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
 
     // Handle
     //==================================================================================================================
-    private suspend fun checkCurrentVersion(){
-        val currentVersion = sharePreference.getCurrentVersion()
-        if (currentVersion != appVersionName()){
+    private suspend fun checkCurrentVersion() {
+        val currentVersion = appVersionName()
+
+        if (currentVersion != sharePreference.getCurrentVersion()) {
+            sharePreference.setCurrentVersion(currentVersion)
             dataViewModel.deleteAllEditCharacterRoom(this)
         }
     }
@@ -98,7 +100,8 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
     // Result + Permission
     //==================================================================================================================
     @SuppressLint("MissingSuperCall", "GestureBackNavigation")
-    override fun onBackPressed() {}
+    override fun onBackPressed() {
+    }
 
 
     // Ads
