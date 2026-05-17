@@ -1,6 +1,5 @@
 package com.meskiep.vaithat.ui.view
 
-
 import android.content.pm.PackageManager
 import android.os.Build
 import android.view.LayoutInflater
@@ -11,14 +10,12 @@ import com.meskiep.vaithat.core.base.BaseActivity
 import com.meskiep.vaithat.core.extension.animateZoom
 import com.meskiep.vaithat.core.extension.animateZoomIn
 import com.meskiep.vaithat.core.extension.checkPermissions
-import com.meskiep.vaithat.core.extension.dLog
 import com.meskiep.vaithat.core.extension.goToSettings
 import com.meskiep.vaithat.core.extension.gone
 import com.meskiep.vaithat.core.extension.handleBackLeftToRight
 import com.meskiep.vaithat.core.extension.invisible
 import com.meskiep.vaithat.core.extension.launchIO
 import com.meskiep.vaithat.core.extension.loadImage
-import com.meskiep.vaithat.core.extension.loadImageFromFile
 import com.meskiep.vaithat.core.extension.margin
 import com.meskiep.vaithat.core.extension.requestPermission
 import com.meskiep.vaithat.core.extension.setImageWithOption
@@ -129,7 +126,7 @@ class ViewActivity : BaseActivity<ActivityViewBinding>() {
 
             actionBar.apply {
                 btnActionBarRight.setImageWithOption(R.drawable.ic_view_share)
-                btnActionBarNextToRight.setImageWithOption(R.drawable.ic_view_edit)
+                btnActionBarNextToRight.setImageWithOption(R.drawable.ic_home)
 
             }
 
@@ -288,7 +285,6 @@ class ViewActivity : BaseActivity<ActivityViewBinding>() {
     }
 
     fun loadImageByPath(path: String) {
-        dLog("loadImageByPath: ${path}")
         if (path == "") return
 
         loadImage(path, binding.imvImage, false)

@@ -69,20 +69,37 @@ class DataRepository @Inject constructor(
 
     // Get
     suspend fun getAllDataCharacterDesc(): List<EditCharacter> {
-        return editCharacterDAO.getAllDataCharacterDesc()
+        return editCharacterDAO.getAllEditCharacterDesc()
     }
 
-    // Get
+    suspend fun selectEditCharacterByThumbPaths(thumbPathList: List<String>): List<EditCharacter> {
+        return editCharacterDAO.selectEditCharacterByThumbPaths(thumbPathList)
+    }
+
+    suspend fun selectEditCharacterByThumbPath(thumbPath: String): EditCharacter {
+        return editCharacterDAO.selectEditCharacterByThumbPath(thumbPath)
+    }
+
+    suspend fun selectEditCharacterByFileNameInternal(fileNameInternal: String): EditCharacter {
+        return editCharacterDAO.selectEditCharacterByFileNameInternal(fileNameInternal)
+    }
+
+
+    // Delete
     suspend fun deleteAllEditCharacter() {
         editCharacterDAO.deleteAllEditCharacter()
     }
 
-    suspend fun deleteEditCharacterByFileNameInternal(fileNameInternal: String){
+    suspend fun deleteEditCharacterByFileNameInternal(fileNameInternal: String) {
         editCharacterDAO.deleteEditCharacterByFileNameInternal(fileNameInternal)
     }
 
-    suspend fun deleteEditCharacterByFileNameInternals(fileNameInternals: List<String>){
+    suspend fun deleteEditCharacterByFileNameInternals(fileNameInternals: List<String>) {
         editCharacterDAO.deleteEditCharacterByFileNameInternals(fileNameInternals)
+    }
+
+    suspend fun deleteEditCharacterByThumbPathInternals(thumbPathInternals: List<String>) {
+        editCharacterDAO.deleteEditCharacterByThumbPathInternals(thumbPathInternals)
     }
 
     // Other

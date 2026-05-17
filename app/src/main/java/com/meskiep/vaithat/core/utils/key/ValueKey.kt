@@ -40,6 +40,11 @@ object ValueKey {
     const val SPEECH_NAVIGATION = 2
     const val TEXT_NAVIGATION = 3
 
+    const val SHARE_ANOTHER_APP = 0
+    const val ADD_TELEGRAM = 1
+    const val ADD_WHATSAPP = 2
+    const val DOWNLOAD_TO_EXTERNAL = 3
+
     //============================================================================================================================
     // View
     const val VIEW_TYPE = 0

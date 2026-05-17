@@ -103,4 +103,10 @@
     <string name="invalid_action_msg">Application not installed</string>
     <string name="invalid_action">Error</string>
     <string name="please_select_an_item">Please select an item</string>
+    <string name="download_success"><![CDATA[Successfully downloaded to the Emoji & Sticker Maker folder.]]></string>
+    <string name="at_least_3_photos_are_needed">At least 3 photos are needed.</string>
+    <string name="maximum_30_images">Maximum 30 images</string>
+    <string name="create_package_name">Create package name</string>
+    <string name="enter_your_package_name">Enter you package name</string>
+    <string name="please_enter_your_package_name">Please enter your package name!</string>
 </resources>

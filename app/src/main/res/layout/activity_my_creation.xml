@@ -137,7 +137,6 @@
         android:layout_height="0dp"
         android:layout_marginTop="-26dp"
         android:scaleType="fitXY"
-        android:visibility="gone"
         android:src="@drawable/bg_gradient_black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/lnlBottom"
@@ -177,7 +176,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="2dp"
+                    android:paddingHorizontal="8dp"
                     android:paddingVertical="12dp">
 
                     <ImageView
@@ -216,7 +215,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="2dp"
+                    android:paddingHorizontal="8dp"
                     android:paddingVertical="12dp">
 
                     <ImageView

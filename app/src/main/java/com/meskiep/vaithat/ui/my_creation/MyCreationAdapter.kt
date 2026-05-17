@@ -1,6 +1,5 @@
 package com.meskiep.vaithat.ui.my_creation
 
-import android.R.attr.path
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,11 +7,10 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.meskiep.vaithat.R
-import com.meskiep.vaithat.core.extension.dLog
 import com.meskiep.vaithat.core.extension.gone
 import com.meskiep.vaithat.core.extension.loadImage
+import com.meskiep.vaithat.core.extension.tap
 import com.meskiep.vaithat.core.extension.visible
 import com.meskiep.vaithat.core.utils.key.ValueKey
 import com.meskiep.vaithat.data.model.MyCreationModel
@@ -20,9 +18,12 @@ import com.meskiep.vaithat.databinding.ItemMyCreationBinding
 
 class MyCreationAdapter(val context: Context, val creationType: Int) :
     ListAdapter<MyCreationModel, MyCreationAdapter.MyCreationViewHolder>(MyCreationDiffCallback()) {
+
     var onItemClick: (MyCreationModel) -> Unit = {}
     var onItemLongClick: (Int) -> Unit = {}
     var onItemSelectClick: (Int) -> Unit = {}
+    var onItemDeleteClick: ((MyCreationModel) -> Unit) = {}
+    var onItemEditClick: ((MyCreationModel) -> Unit) = {}
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): MyCreationViewHolder {
         return MyCreationViewHolder(ItemMyCreationBinding.inflate(LayoutInflater.from(p0.context), p0, false))
@@ -68,6 +69,7 @@ class MyCreationAdapter(val context: Context, val creationType: Int) :
 
                 if (creationType == ValueKey.EDIT_CREATION) {
                     btnEdit.visible()
+                    btnEdit.tap { onItemEditClick.invoke(item) }
                 } else {
                     btnEdit.gone()
                 }
@@ -83,19 +85,30 @@ class MyCreationAdapter(val context: Context, val creationType: Int) :
                     onItemLongClick(bindingAdapterPosition)
                     true
                 }
+
+                btnDelete.tap { onItemDeleteClick.invoke(item) }
             }
 
         }
 
         fun updateSelected(isSelected: Boolean) {
             val res = if (isSelected) R.drawable.ic_my_creation_selected else R.drawable.ic_my_creation_unselect
-            binding.btnSelect.setImageResource(res)
-            binding.vSelected.isVisible = isSelected
+            binding.apply {
+                btnSelect.setImageResource(res)
+                vSelected.isVisible = isSelected
+            }
         }
 
         fun updateShowSelection(isShow: Boolean) {
-            binding.btnSelect.isVisible = isShow
-            binding.btnDelete.isVisible = !isShow
+            binding.apply {
+                btnSelect.isVisible = isShow
+                btnDelete.isVisible = !isShow
+                if (creationType == ValueKey.EDIT_CREATION){
+                    btnEdit.isVisible = !isShow
+                }else{
+                    btnEdit.gone()
+                }
+            }
         }
     }
 

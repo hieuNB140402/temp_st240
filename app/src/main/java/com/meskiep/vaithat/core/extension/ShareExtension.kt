@@ -15,7 +15,7 @@ fun Activity.shareImagesUris(imageUris: ArrayList<Uri>) {
     startActivity(Intent.createChooser(intent, "Share Images"))
 }
 
-fun Activity.shareImagesPaths(imagePaths: ArrayList<String>) {
+fun Activity.shareImagesPaths(imagePaths: List<String>) {
     val imageUris = ArrayList<Uri>()
     for (filePath in imagePaths) {
         val imageFile = File(filePath)

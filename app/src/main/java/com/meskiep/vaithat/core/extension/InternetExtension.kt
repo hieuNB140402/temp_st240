@@ -20,3 +20,19 @@ fun BaseActivity<*>.checkInternet(action: () -> Unit) {
         dialog.show()
     }
 }
+
+fun BaseActivity<*>.checkInternet(action: () -> Unit, onYesClick: (() -> Unit)? = null) {
+    if (InternetHelper.isInternetAvailable(this)) {
+        action.invoke()
+    } else {
+        val dialog = ConfirmDialog(
+            context = this,
+            title = R.string.oops,
+            description = R.string.please_check_your_network_connection,
+            isError = true
+        )
+
+        dialog.show()
+        dialog.onYesClick = { onYesClick?.invoke() }
+    }
+}

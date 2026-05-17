@@ -47,7 +47,6 @@ class ViewViewModel @Inject constructor(val dataRepository: DataRepository) : Vi
     suspend fun deleteItem() {
         if (statusView == ValueKey.EDIT_CREATION) {
             deleteEditCharacterByFileNameInternal(_imagePath.value)
-
         } else {
             MediaHelper.deleteFileByPathNotFlow(arrayListOf(_imagePath.value))
         }

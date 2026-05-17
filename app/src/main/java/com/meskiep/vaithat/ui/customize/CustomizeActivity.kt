@@ -80,13 +80,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
     override fun initView() {
         initRcv()
-
-        if (!viewModel.isCreated.value) {
-            lifecycleScope.launch { showLoading() }
-            dataViewModel.ensureData(this)
-        } else {
-
-        }
+        initInternet()
 
     }
 
@@ -143,6 +137,20 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         }
     }
 
+    private fun initInternet() {
+        if (!viewModel.isCreated.value) {
+            checkInternet(
+                action = {
+                    lifecycleScope.launch { showLoading() }
+                    dataViewModel.ensureData(this)
+                },
+                onYesClick = {
+                    initInternet()
+                }
+            )
+        }
+    }
+
     private fun initData() {
         val handleExceptionCoroutine = CoroutineExceptionHandler { _, throwable ->
             eLog("initData: ${throwable.message}")
@@ -160,20 +168,17 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
             // Get data from list
             val deferred1 = async {
+                viewModel.initValueData()
 
                 when (viewModel.customizeStatusPlay) {
-                    ValueKey.CREATE -> {
-                        viewModel.initValueData()
+                    ValueKey.CREATE -> {}
+
+                    ValueKey.EDIT -> {
+                        viewModel.initDataEdit(intent.getStringExtra(IntentKey.PATH_EDIT_KEY) ?: "")
                     }
 
-                    // Edit
                     else -> {
-//                        viewModel.updateSuggestionModel(
-//                            MediaHelper.readModelFromFile<SuggestionModel>(
-//                                this@CustomizeActivity, ValueKey.SUGGESTION_FILE_INTERNAL
-//                            )!!
-//                        )
-//                        viewModel.fillSuggestionToCustomize()
+
                     }
                 }
 
@@ -205,47 +210,57 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
             withContext(Dispatchers.Main) {
                 if (deferred1.await() && deferred2.await() && deferred3.await()) {
-                    when (viewModel.customizeStatusPlay) {
-                        ValueKey.CREATE -> {
-                            loadPathToImage(viewModel.getFirstImageView(), pathImageDefault)
-
-                            binding.actionBar.apply {
-                                btnActionBarCenterLeft.setImageWithOption(R.drawable.ic_flip_draw_horizontal)
-                                btnActionBarCenterRight.setImageWithOption(R.drawable.ic_reset)
-                                btnActionBarRightText.setBackgroundWithOption(R.drawable.bg_focus_very_short)
-                                tvActionBarRightText.apply {
-                                    setTextWithOption(strings(R.string.next))
-                                    setTextColor(getColor(R.color.white))
-                                    setStroke(
-                                        UnitHelper.pxToDpFloat(this@CustomizeActivity, 2f),
-                                        getColor(R.color.green_003B50)
-                                    )
-                                }
-                            }
-                        }
-
-                        // Edit
-                        else -> {
-//                            viewModel.pathSelectedList.forEachIndexed { index, path ->
-//                                if (path != "") {
-//                                    Glide.with(this@CustomizeActivity).load(path).override(512, 512)
-//                                        .fitCenter().into(viewModel.imageViewList[index])
-//                                }
-//                            }
-                        }
-                    }
-
-                    layerAdapter.submitList(viewModel.itemNavList[viewModel.positionNavSelected])
-                    colorLayerAdapter.submitList(viewModel.colorItemNavList[viewModel.positionNavSelected])
-
-                    checkStatusColor()
-                    viewModel.setIsCreated(true)
-
-                    delay(300)
-                    dismissLoading()
-                    dLog("main")
+                    loadImageDefault(pathImageDefault)
                 }
             }
+        }
+    }
+
+    private suspend fun loadImageDefault(pathImageDefault: String) {
+        when (viewModel.customizeStatusPlay) {
+            ValueKey.CREATE -> {
+                loadPathToImage(viewModel.getFirstImageView(), pathImageDefault)
+                setupActionNorma()
+            }
+
+            ValueKey.EDIT -> {
+                loadPathToImage(viewModel.getFirstImageView(), pathImageDefault)
+                setupActionNorma()
+                viewModel.pathSelectedList.forEachIndexed { index, path ->
+                    if (path != "") {
+                        loadPathToImage(viewModel.imageViewList[index], path)
+                    }
+                }
+            }
+
+
+            else -> {
+
+            }
+        }
+
+        layerAdapter.submitList(viewModel.itemNavList[viewModel.positionNavSelected])
+        colorLayerAdapter.submitList(viewModel.colorItemNavList[viewModel.positionNavSelected])
+
+        checkStatusColor()
+        viewModel.setIsCreated(true)
+
+        delay(300)
+        dismissLoading()
+        dLog("main")
+    }
+
+    private fun setupActionNorma() = with(binding.actionBar) {
+        btnActionBarCenterLeft.setImageWithOption(R.drawable.ic_flip_draw_horizontal)
+        btnActionBarCenterRight.setImageWithOption(R.drawable.ic_reset)
+        btnActionBarRightText.setBackgroundWithOption(R.drawable.bg_focus_very_short)
+        tvActionBarRightText.apply {
+            setTextWithOption(strings(R.string.next))
+            setTextColor(getColor(R.color.white))
+            setStroke(
+                UnitHelper.pxToDpFloat(this@CustomizeActivity, 2f),
+                getColor(R.color.green_003B50)
+            )
         }
     }
 
@@ -451,7 +466,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             blockIO = {
                 val dataName = intent.getStringExtra(IntentKey.AVATAR_NAME_KEY) ?: ""
                 val customStatusPlay = intent.getIntExtra(IntentKey.CUSTOM_STATUS_PLAY_KEY, ValueKey.CREATE)
-                viewModel.setupDataGetSuccess(this@CustomizeActivity, dataName, customStatusPlay)
+                viewModel.setupDataGetSuccess(dataName, customStatusPlay)
             },
             blockMain = {
                 initData()

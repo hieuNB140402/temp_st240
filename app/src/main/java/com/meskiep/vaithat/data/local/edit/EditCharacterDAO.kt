@@ -12,24 +12,33 @@ interface EditCharacterDAO {
     suspend fun insertEditCharacter(editCharacter: EditCharacter)
 
     @Insert
-    suspend fun insertDataCharacterList(list: List<EditCharacter>)
+    suspend fun insertEditCharacterList(list: List<EditCharacter>)
 
     // Get
     @Query("SELECT * FROM edit_character")
-    suspend fun getAllDataCharacter(): List<EditCharacter>
+    suspend fun getAllEditCharacter(): List<EditCharacter>
 
     @Query("SELECT * FROM edit_character ORDER BY id DESC")
-    suspend fun getAllDataCharacterDesc(): List<EditCharacter>
+    suspend fun getAllEditCharacterDesc(): List<EditCharacter>
 
     @Query("SELECT * FROM edit_character WHERE id = :id")
-    suspend fun selectDataCharacterById(id: Int): EditCharacter
+    suspend fun selectEditCharacterById(id: Int): EditCharacter
 
+    @Query("SELECT * FROM edit_character WHERE thumbPath IN (:thumbPathList)")
+    suspend fun selectEditCharacterByThumbPaths(thumbPathList: List<String>): List<EditCharacter>
+
+    @Query("SELECT * FROM edit_character WHERE thumbPath = :thumbPath")
+    suspend fun selectEditCharacterByThumbPath(thumbPath: String): EditCharacter
+
+    @Query("SELECT * FROM edit_character WHERE fileNameInternal = :fileNameInternal")
+    suspend fun selectEditCharacterByFileNameInternal(fileNameInternal: String): EditCharacter
+    
     @Query("SELECT * FROM edit_character WHERE dataName = :dataName")
-    suspend fun selectDataCharacterByDataName(dataName: String): EditCharacter
-
+    suspend fun selectEditCharacterByDataName(dataName: String): EditCharacter
+    
     // Update
     @Update
-    suspend fun updateDataCharacter(editCharacter: EditCharacter)
+    suspend fun updateEditCharacter(editCharacter: EditCharacter)
 
     // Delete
     @Query("DELETE FROM edit_character")
@@ -40,4 +49,7 @@ interface EditCharacterDAO {
 
     @Query("DELETE FROM edit_character WHERE fileNameInternal IN (:fileNameInternals)")
     suspend fun deleteEditCharacterByFileNameInternals(fileNameInternals: List<String>)
+
+    @Query("DELETE FROM edit_character WHERE thumbPath IN (:thumbPathInternals)")
+    suspend fun deleteEditCharacterByThumbPathInternals(thumbPathInternals: List<String>)
 }

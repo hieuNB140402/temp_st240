@@ -1,5 +1,6 @@
 package com.meskiep.vaithat.ui.customize
 
+import android.R.attr.path
 import android.content.Context
 import android.util.Log
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.ImageView
 import androidx.lifecycle.ViewModel
 import com.meskiep.vaithat.core.extension.dLog
 import com.meskiep.vaithat.core.extension.eLog
+import com.meskiep.vaithat.core.extension.iLog
 import com.meskiep.vaithat.core.helper.BitmapHelper
 import com.meskiep.vaithat.core.helper.MediaHelper
 import com.meskiep.vaithat.core.helper.StringHelper
@@ -79,8 +81,6 @@ class CustomizeViewModel @Inject constructor(val dataRepository: DataRepository)
 
     val isSelectedItemList = ArrayList<Boolean>()
 
-    val isShowColorList = ArrayList<Boolean>()
-
     // Key + Path đã chọn
     var keySelectedItemList = ArrayList<String>()
 
@@ -93,15 +93,15 @@ class CustomizeViewModel @Inject constructor(val dataRepository: DataRepository)
 
     var suggestionModel = SuggestionModel()
 
+    var thumbPathEdit = ""
 
     // Initialization
     //==================================================================================================================
-    suspend fun setupDataGetSuccess(context: Context, dataName: String, customStatusPlay: Int) {
+    suspend fun setupDataGetSuccess(dataName: String, customStatusPlay: Int) {
         val dataCharacter = selectDataCharacterByDataName(dataName)
-        val customizeModel = MediaHelper.readModelFromFileRealPath<CustomizeModel>(context, dataCharacter.fileNameInternal)
+        val customizeModel = MediaHelper.readModelFromFileRealPath<CustomizeModel>(dataCharacter.fileNameInternal)
         updateDataCustomize(customizeModel!!)
         updateCustomizeStatusPlay(customStatusPlay)
-//        updateAvatarPath(list[position].avatar)
         dLog("customizeModel: $customizeModel")
     }
 
@@ -117,8 +117,11 @@ class CustomizeViewModel @Inject constructor(val dataRepository: DataRepository)
 
     suspend fun initValueData() {
         resetDataList()
+        // Khong dong
         addValueToItemNavList()
+
         setItemColorDefault()
+        // Khong dong
         setFocusItemNavDefault()
     }
 
@@ -127,22 +130,56 @@ class CustomizeViewModel @Inject constructor(val dataRepository: DataRepository)
         val positionColorItemList = ArrayList<Int>(quantityLayer)
         val isSelectedItemList = ArrayList<Boolean>(quantityLayer)
         val keySelectedItemList = ArrayList<String>(quantityLayer)
-        val isShowColorList = ArrayList<Boolean>(quantityLayer)
         val pathSelectedList = ArrayList<String>(quantityLayer)
 
         repeat(quantityLayer) {
             positionColorItemList.add(0)
             isSelectedItemList.add(false)
             keySelectedItemList.add("")
-            isShowColorList.add(true)
             pathSelectedList.add("")
         }
 
         updatePositionColorItemList(positionColorItemList)
         updateIsSelectedItemList(isSelectedItemList)
         updateKeySelectedItemList(keySelectedItemList)
-        updateIsShowColorList(isShowColorList)
         updatePathSelectedList(pathSelectedList)
+    }
+
+    suspend fun initDataEdit(fileNameInternal: String) {
+        val startTime = System.currentTimeMillis()
+        val editModel = selectEditCharacterByFileNameInternal(fileNameInternal)
+        updateThumbPathEdit(editModel.thumbPath)
+
+        val suggestionModel = MediaHelper.readModelFromFileRealPath<SuggestionModel>(editModel.fileNameInternal) ?: return
+        updatePathSelectedList(suggestionModel.pathSelectedList)
+        updateKeySelectedItemList(suggestionModel.keySelectedItemList)
+
+        keySelectedItemList.forEachIndexed { index, keySelected ->
+            if (keySelected != "") {
+                // Vi tri item duoc chon trong layer rcv
+                val positionItemLayerSelected = itemNavList[index].indexOfFirst { it.pathNoColor == keySelected }
+                // Item duoc chon trong layer rcv
+                val itemLayerSelected = itemNavList[index][positionItemLayerSelected]
+
+                val positionNavigation = itemLayerSelected.positionNavigation
+                val positionCustom = itemLayerSelected.positionCustom
+
+                // Dat lai focus
+                setIsSelectedItem(positionNavigation)
+                setItemNavList(positionNavigation, positionItemLayerSelected)
+
+                if (pathSelectedList[positionCustom] != keySelected) {
+                    // Vi tri color duoc chon (hinh anh mau duoc chon)
+                    val positionColorSelected = itemLayerSelected.listImageColor.indexOfFirst { it.path == pathSelectedList[positionCustom] }
+                    // Dat lai focus mau (thanh mau)
+                    setColorItemNav(positionNavigation, positionColorSelected)
+                    // Dat lai vi tri mau duoc chon (da duoc chon hay chua)
+                    setPositionColorItem(positionNavigation, positionColorSelected)
+                }
+            }
+        }
+
+        iLog("timeInitDataEdit: ${System.currentTimeMillis() - startTime}")
     }
 
 
@@ -192,11 +229,6 @@ class CustomizeViewModel @Inject constructor(val dataRepository: DataRepository)
         isSelectedItemList[position] = true
     }
 
-    fun updateIsShowColorList(showList: ArrayList<Boolean>) {
-        isShowColorList.clear()
-        isShowColorList.addAll(showList)
-    }
-
     fun updateKeySelectedItemList(keyList: ArrayList<String>) {
         keySelectedItemList.clear()
         keySelectedItemList = keyList
@@ -206,7 +238,7 @@ class CustomizeViewModel @Inject constructor(val dataRepository: DataRepository)
         keySelectedItemList[position] = newKey
     }
 
-    fun updatePathSelectedList(pathList: ArrayList<String>) {
+    fun updatePathSelectedList(pathList: List<String>) {
         pathSelectedList.clear()
         pathSelectedList.addAll(pathList)
     }
@@ -222,6 +254,10 @@ class CustomizeViewModel @Inject constructor(val dataRepository: DataRepository)
 
     fun updateSuggestionModel(model: SuggestionModel) {
         suggestionModel = model
+    }
+
+    fun updateThumbPathEdit(thumbPath: String) {
+        thumbPathEdit = thumbPath
     }
 
 
@@ -577,8 +613,8 @@ class CustomizeViewModel @Inject constructor(val dataRepository: DataRepository)
                 folder = ValueKey.EDIT_CHARACTER_ALBUM,
                 fileName = StringHelper.generateRandomString(5),
                 model = SuggestionModel(
-                    avatarPath = dataCustomize!!.avatar,
                     pathSelectedList = pathSelectedList,
+                    keySelectedItemList = keySelectedItemList
                 )
             )
         )
@@ -699,5 +735,14 @@ class CustomizeViewModel @Inject constructor(val dataRepository: DataRepository)
 
     suspend fun insertDataCharacter(editCharacter: EditCharacter) {
         dataRepository.insertEditCharacter(editCharacter)
+    }
+
+    // Edit
+    suspend fun selectEditCharacterByThumbPath(thumbPath: String): EditCharacter {
+        return dataRepository.selectEditCharacterByThumbPath(thumbPath)
+    }
+
+    suspend fun selectEditCharacterByFileNameInternal(fileNameInternal: String): EditCharacter {
+        return dataRepository.selectEditCharacterByFileNameInternal(fileNameInternal)
     }
 }

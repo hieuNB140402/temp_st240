@@ -7,6 +7,7 @@ import androidx.activity.result.ActivityResult
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.util.copy
 import com.meskiep.vaithat.core.helper.MediaHelper
 import com.meskiep.vaithat.core.helper.StringHelper
 import com.meskiep.vaithat.core.share.telegram.TelegramSharing
@@ -16,6 +17,7 @@ import com.meskiep.vaithat.core.share.whatsapp.StickerPack
 import com.meskiep.vaithat.core.utils.key.ValueKey
 import com.meskiep.vaithat.core.utils.state.DeleteState
 import com.meskiep.vaithat.core.utils.state.HandleState
+import com.meskiep.vaithat.core.utils.state.ShareState
 import com.meskiep.vaithat.data.app.DataRepository
 import com.meskiep.vaithat.data.local.edit.EditCharacter
 import com.meskiep.vaithat.data.model.MyCreationModel
@@ -26,7 +28,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.collections.any
@@ -43,11 +47,11 @@ class MyCreationViewModel @Inject constructor(val dataRepository: DataRepository
     private val _typeSelected = MutableStateFlow<Int>(-1)
     val typeSelected = _typeSelected.asStateFlow()
 
-    private val _isShowSelection = MutableStateFlow(false)
-    val isShowSelection: StateFlow<Boolean> = _isShowSelection.asStateFlow()
+    private val _isShowSelection = MutableSharedFlow<Boolean>()
+    val isShowSelection = _isShowSelection.asSharedFlow()
 
-    private val _isLastItem = MutableStateFlow<Boolean>(false)
-    val isLastItem: StateFlow<Boolean> = _isLastItem
+    private val _isLastItem = MutableSharedFlow<Boolean>()
+    val isLastItem = _isLastItem.asSharedFlow()
 
     private val _editList = MutableStateFlow<List<MyCreationModel>>(listOf())
     val editList = _editList.asStateFlow()
@@ -67,18 +71,26 @@ class MyCreationViewModel @Inject constructor(val dataRepository: DataRepository
     }
 
     fun setSelectionState(state: Boolean) {
-        _isShowSelection.value = state
+        viewModelScope.launch {
+            _isShowSelection.emit(state)
+        }
     }
 
-    fun isEditState() : Boolean{
+    fun setIsLastItem(isLastItem: Boolean) {
+        viewModelScope.launch {
+            _isLastItem.emit(isLastItem)
+        }
+    }
+
+    fun isEditState(): Boolean {
         return _typeSelected.value == ValueKey.EDIT_CREATION
     }
 
-    fun editListIsEmpty() : Boolean{
+    fun editListIsEmpty(): Boolean {
         return _editList.value.isEmpty()
     }
 
-    fun viewListIsEmpty() : Boolean{
+    fun viewListIsEmpty(): Boolean {
         return _viewList.value.isEmpty()
     }
 
@@ -97,7 +109,6 @@ class MyCreationViewModel @Inject constructor(val dataRepository: DataRepository
             MediaHelper.getImageInternal(context, ValueKey.DOWNLOAD_ALBUM).map { MyCreationModel(thumbPath = it) }
         viewList.reversed()
         _viewList.value = viewList
-        checkLastItem()
     }
 
 
@@ -108,6 +119,9 @@ class MyCreationViewModel @Inject constructor(val dataRepository: DataRepository
             } else {
                 getViewCreation(context)
             }
+
+            setSelectionState(false)
+            setIsLastItem(false)
         }
     }
 
@@ -129,54 +143,36 @@ class MyCreationViewModel @Inject constructor(val dataRepository: DataRepository
     }
 
     fun showSelectMyCreation(indexTouch: Int) {
+        if (isEditState()) {
+            _editList.value = _editList.value.mapIndexed { index, model ->
+                model.copy(
+                    isSelected = index == indexTouch,
+                    isShowSelection = true
+                )
+            }
+        } else {
+            _viewList.value = _viewList.value.mapIndexed { index, model ->
+                model.copy(
+                    isSelected = index == indexTouch,
+                    isShowSelection = true
+                )
+            }
+        }
         setSelectionState(true)
-
-        if (isEditState()) {
-            _editList.value = _editList.value.mapIndexed { index, model ->
-                model.copy(
-                    isSelected = if (index == indexTouch) !model.isSelected else model.isSelected,
-                    isShowSelection = true
-                )
-            }
-        } else {
-            _editList.value = _editList.value.mapIndexed { index, model ->
-                model.copy(
-                    isSelected = if (index == indexTouch) !model.isSelected else model.isSelected,
-                    isShowSelection = true
-                )
-            }
-        }
-    }
-
-    fun hideSelectMyCreation() {
-        setSelectionState(false)
-
-        if (isEditState()) {
-            _editList.value = _editList.value.map { model ->
-                model.copy(
-                    isSelected = false,
-                    isShowSelection = false
-                )
-            }
-        } else {
-            _viewList.value = _viewList.value.map { model ->
-                model.copy(
-                    isSelected = false,
-                    isShowSelection = false
-                )
-            }
-        }
+        checkLastItem()
     }
 
     private fun checkLastItem() {
-        _isLastItem.value = if (isEditState()) {
-            _editList.value.any { !it.isSelected }
-        } else {
-            _viewList.value.any { !it.isSelected }
-        }
+        setIsLastItem(
+            if (isEditState()) {
+                !_editList.value.any { !it.isSelected }
+            } else {
+                !_viewList.value.any { !it.isSelected }
+            }
+        )
     }
 
-    suspend fun getItemSelected(): List<String> {
+    suspend fun getItemSelected(isShareAnotherApp: Boolean = false): List<String> {
 
         var list = if (isEditState()) {
             _editList.value
@@ -188,31 +184,58 @@ class MyCreationViewModel @Inject constructor(val dataRepository: DataRepository
                 .map { it.thumbPath }
         }
 
-        if (list.isEmpty() && isEditState()) {
-            list = _editList.value
-                .filter { !it.isShowSelection }
-                .map { it.thumbPath }
+        if (list.isEmpty() && isEditState() && isShareAnotherApp) {
+            list = _editList.value.map { it.thumbPath }
         }
 
         return list
     }
 
+    suspend fun getItemSelectedState(): ShareState {
+        val thumbPathList = getItemSelected()
+
+        return if (thumbPathList.isNotEmpty()) {
+            ShareState.Success(thumbPathList)
+        } else {
+            ShareState.Empty
+        }
+    }
+
+    fun handleSelectAll() {
+        val isSelectedAll = if (isEditState()) {
+            !_editList.value.any { !it.isSelected }
+        } else {
+            !_viewList.value.any { !it.isSelected }
+        }
+
+        if (isEditState()) {
+            _editList.value = _editList.value.map { it.copy(isSelected = !isSelectedAll) }
+        } else {
+            _viewList.value = _viewList.value.map { it.copy(isSelected = !isSelectedAll) }
+        }
+
+        checkLastItem()
+    }
+
     // Delete
     //==================================================================================================================
 
-    suspend fun deleteMyCreation(context: Context): DeleteState {
-        val listSelected = getItemSelected()
+    suspend fun deleteMyCreation(context: Context, thumbPath: String): DeleteState {
+        val listSelected = if (thumbPath == "") {
+            getItemSelected()
+        } else {
+            listOf(thumbPath)
+        }
 
         if (listSelected.isEmpty()) return DeleteState.Empty
 
         return try {
             if (isEditState()) {
-                deleteEditCharacterByFileNameInternals(listSelected)
-                getEditCreation()
-            } else {
-                MediaHelper.deleteFileByPathNotFlow(listSelected)
-                getViewCreation(context)
+                deleteEditCharacterByThumbPathInternals(listSelected)
             }
+
+            MediaHelper.deleteFileByPathNotFlow(listSelected)
+            getViewCreation(context)
 
             DeleteState.Success
 
@@ -225,12 +248,12 @@ class MyCreationViewModel @Inject constructor(val dataRepository: DataRepository
     // Share
     //==================================================================================================================
 
-    fun addToTelegram(context: Context, list: ArrayList<String>) {
-        val uriList = getAllUrisFromList(context, list)
+    fun addToTelegram(context: Context, thumbPathList: List<String>) {
+        val uriList = getAllUrisFromList(context, thumbPathList)
         TelegramSharing.importToTelegram(context, uriList)
     }
 
-    fun addToWhatsapp(context: Activity, packageName: String, list: ArrayList<String>, onResult: (StickerPack?) -> Unit) {
+    fun addToWhatsapp(context: Activity, packageName: String, list: List<String>, onResult: (StickerPack?) -> Unit) {
         val uriList = getAllUrisFromList(context, list)
         val packId = IdGenerator.generateIdFromUrl(context, StringHelper.generateRandomString(10))
         val stickerPack = StickerPack(packId, packageName, uriList, context)
@@ -238,7 +261,7 @@ class MyCreationViewModel @Inject constructor(val dataRepository: DataRepository
         onResult(stickerPack)
     }
 
-    fun getAllUrisFromList(context: Context, shareList: ArrayList<String>): List<Uri> {
+    fun getAllUrisFromList(context: Context, shareList: List<String>): List<Uri> {
         val contentUriList = ArrayList<Uri>()
 
         val listPath = arrayListOf<String>()
@@ -260,6 +283,14 @@ class MyCreationViewModel @Inject constructor(val dataRepository: DataRepository
 
     // Room
     //==================================================================================================================
+    fun downloadThumbPathToExternal(context: Context, thumbPathList: List<String> = emptyList()) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _downloadState.emitAll(MediaHelper.downloadPartsToExternal(context, thumbPathList.ifEmpty { getItemSelected() }))
+        }
+    }
+
+    // Room
+    //==================================================================================================================
 
     suspend fun getAllDataCharacterDesc(): List<EditCharacter> {
         return dataRepository.getAllDataCharacterDesc()
@@ -268,4 +299,17 @@ class MyCreationViewModel @Inject constructor(val dataRepository: DataRepository
     suspend fun deleteEditCharacterByFileNameInternals(fileNameInternals: List<String>) {
         dataRepository.deleteEditCharacterByFileNameInternals(fileNameInternals)
     }
+
+    suspend fun deleteEditCharacterByThumbPathInternals(thumbPathInternals: List<String>) {
+        val fileInternal = dataRepository.selectEditCharacterByThumbPaths(thumbPathInternals)
+
+        MediaHelper.deleteFileByPathNotFlow(fileInternal.map { it.fileNameInternal })
+        dataRepository.deleteEditCharacterByThumbPathInternals(thumbPathInternals)
+    }
+
+    suspend fun getDataNameAndFileNameInternalByThumbPath(thumbPath: String): Pair<String, String> {
+        val editModel = dataRepository.selectEditCharacterByThumbPath(thumbPath)
+        return editModel.dataName to editModel.fileNameInternal
+    }
+
 }

@@ -187,6 +187,19 @@ object MediaHelper {
         }
     }
 
+    inline fun <reified T> readListFromFileRealPath(filePath: String): List<T> {
+        return try {
+            val file = File(filePath)
+            val json = file.readText()
+            val type = object : TypeToken<List<T>>() {}.type
+            Gson().fromJson(json, type) ?: emptyList()
+        } catch (e: Exception) {
+            eLog("readListFromFileRealPath: ${e.message}")
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
     inline fun <reified T> writeModelToFile(
         context: Context,
         folder: String,
@@ -228,7 +241,7 @@ object MediaHelper {
         }
     }
 
-    inline fun <reified T> readModelFromFileRealPath(context: Context, filePath: String): T? {
+    inline fun <reified T> readModelFromFileRealPath(filePath: String): T? {
         return try {
             val file = File(filePath)
             val json = file.readText()
@@ -414,7 +427,7 @@ object MediaHelper {
         }
     }
 
-    fun downloadPartsToExternal(activity: Activity, pathList: List<String>): Flow<HandleState> = flow {
+    fun downloadPartsToExternal(context: Context, pathList: List<String>): Flow<HandleState> = flow {
         emit(HandleState.LOADING)
 
         if (pathList.isEmpty()) {
@@ -423,18 +436,18 @@ object MediaHelper {
         }
 
         val bitmapList = if (pathList.first().contains(AssetsKey.ASSET_MANAGER)) {
-            listOf(AssetHelper.getBitmapFromAsset(activity, pathList.first())!!)
+            listOf(AssetHelper.getBitmapFromAsset(context, pathList.first())!!)
         } else {
-            BitmapHelper.convertPathsToBitmaps(activity, pathList)
+            BitmapHelper.convertPathsToBitmaps(context, pathList)
         }
 
 
         if (bitmapList.size == 1) {
-            emitAll(saveBitmapToExternal(activity, bitmapList.first()))
+            emitAll(saveBitmapToExternal(context, bitmapList.first()))
         } else {
             var allSuccess = true
             for (bitmap in bitmapList) {
-                val state = saveBitmapToExternal(activity, bitmap).last()
+                val state = saveBitmapToExternal(context, bitmap).last()
                 if (state == HandleState.FAIL) {
                     allSuccess = false
                     break
@@ -445,7 +458,7 @@ object MediaHelper {
     }
 
     // bitmap -> external storage
-    fun saveBitmapToExternal(activity: Activity, bitmap: Bitmap): Flow<HandleState> = flow {
+    fun saveBitmapToExternal(activity: Context, bitmap: Bitmap): Flow<HandleState> = flow {
         emit(HandleState.LOADING)
 
         val state = withContext(Dispatchers.IO) {

@@ -14,13 +14,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.meskiep.vaithat.R
+import com.meskiep.vaithat.core.extension.checkInternet
 import com.meskiep.vaithat.core.extension.checkPermissions
 import com.meskiep.vaithat.core.extension.eLog
 import com.meskiep.vaithat.core.extension.goToSettings
 import com.meskiep.vaithat.core.extension.gone
-import com.meskiep.vaithat.core.extension.hideNavigation
 import com.meskiep.vaithat.core.extension.invisible
 import com.meskiep.vaithat.core.extension.launchIO
+import com.meskiep.vaithat.core.extension.margin
 import com.meskiep.vaithat.core.extension.requestPermission
 import com.meskiep.vaithat.core.extension.select
 import com.meskiep.vaithat.core.extension.setImageWithOption
@@ -30,8 +31,7 @@ import com.meskiep.vaithat.core.extension.startIntentWithClearTop
 import com.meskiep.vaithat.core.extension.strings
 import com.meskiep.vaithat.core.extension.tap
 import com.meskiep.vaithat.core.extension.visible
-import com.meskiep.vaithat.core.helper.InternetHelper
-import com.meskiep.vaithat.core.helper.LanguageHelper
+import com.meskiep.vaithat.core.helper.AnimationHelper
 import com.meskiep.vaithat.core.helper.UnitHelper
 import com.meskiep.vaithat.core.share.whatsapp.WhatsappSharingActivity
 import com.meskiep.vaithat.core.utils.key.IntentKey
@@ -39,19 +39,17 @@ import com.meskiep.vaithat.core.utils.key.RequestKey
 import com.meskiep.vaithat.core.utils.key.ValueKey
 import com.meskiep.vaithat.core.utils.state.DeleteState
 import com.meskiep.vaithat.core.utils.state.HandleState
-import com.meskiep.vaithat.data.app.DataViewModel
+import com.meskiep.vaithat.core.utils.state.ShareState
 import com.meskiep.vaithat.data.model.MyCreationModel
-import com.meskiep.vaithat.data.model.custom.CustomizeModel
 import com.meskiep.vaithat.databinding.ActivityMyCreationBinding
 import com.meskiep.vaithat.dialog.ConfirmDialog
+import com.meskiep.vaithat.dialog.CreateNameDialog
 import com.meskiep.vaithat.ui.customize.CustomizeActivity
 import com.meskiep.vaithat.ui.home.HomeActivity
 import com.meskiep.vaithat.ui.permission.PermissionViewModel
 import com.meskiep.vaithat.ui.view.ViewActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.collections.isNotEmpty
 import kotlin.jvm.java
 
@@ -59,7 +57,6 @@ import kotlin.jvm.java
 class MyCreationActivity : WhatsappSharingActivity<ActivityMyCreationBinding>() {
     private val viewModel: MyCreationViewModel by viewModels()
     private val permissionViewModel: PermissionViewModel by viewModels()
-    private val dataViewModel: DataViewModel by viewModels()
     private val editAdapter by lazy { MyCreationAdapter(this, ValueKey.EDIT_CREATION) }
     private val viewAdapter by lazy { MyCreationAdapter(this, ValueKey.VIEW_CREATION) }
 
@@ -78,14 +75,13 @@ class MyCreationActivity : WhatsappSharingActivity<ActivityMyCreationBinding>() 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { viewModel.typeSelected.collect { type -> setupTypeSelected(type) } }
-                launch { viewModel.downloadState.collect { state -> handleDownloadState(state) } }
-                launch { viewModel.isShowSelection.collect { status -> setupIsLongClick(status) } }
-
                 launch { viewModel.editList.collect { list -> setupEditCreationType(list) } }
                 launch { viewModel.viewList.collect { list -> setupViewType(list) } }
 
-//                launch { dataViewModel.allData.collect { list -> setupGetData(list) } }
-                launch { viewModel.isLastItem.collect { status -> changeImageActionBarRight(status) } }
+                launch { viewModel.downloadState.collect { state -> handleDownloadState(state) } }
+                launch { viewModel.isShowSelection.collect { status -> setupIsLongClick(status) } }
+
+                launch { viewModel.isLastItem.collect { isLastItem -> changeImageActionBarRight(isLastItem) } }
             }
         }
     }
@@ -94,18 +90,18 @@ class MyCreationActivity : WhatsappSharingActivity<ActivityMyCreationBinding>() 
         binding.apply {
             actionBar.apply {
                 btnActionBarLeft.tap { startIntentWithClearTop(HomeActivity::class.java) }
-                btnActionBarRight.tap { handleSelectAll() }
+                btnActionBarRight.tap { viewModel.handleSelectAll() }
                 btnActionBarNextToRight.tap { handleDelete() }
             }
-//            bottomBar.apply {
-//                btnBottomBarLeft.tap(2000) { handleShare() }
-//                btnBottomBarRight.tap { checkStoragePermission() }
-//            }
+            bottomBar.apply {
+                btnLeft.tap(2000) { handlePrepareAnotherAction(ValueKey.SHARE_ANOTHER_APP) }
+                btnRight.tap { handlePrepareAnotherAction(ValueKey.DOWNLOAD_TO_EXTERNAL) }
+            }
             btnEditCreation.tap { viewModel.setTypeStatus(ValueKey.EDIT_CREATION) }
             btnViewCreation.tap { viewModel.setTypeStatus(ValueKey.VIEW_CREATION) }
 
-//            btnTelegram.tap { handleAddToTelegram(viewModel.getPathSelected()) }
-//            btnWhatsapp.tap { handleAddToWhatsApp(viewModel.getPathSelected()) }
+            btnTelegram.tap { handlePrepareAnotherAction(ValueKey.ADD_TELEGRAM) }
+            btnWhatsapp.tap { handlePrepareAnotherAction(ValueKey.ADD_WHATSAPP) }
         }
         handleRcv()
     }
@@ -118,8 +114,11 @@ class MyCreationActivity : WhatsappSharingActivity<ActivityMyCreationBinding>() 
             btnActionBarLeft.setImageWithOption(R.drawable.ic_back)
             tvCenter.setTextWithOption(strings(R.string.my_creation))
 
-            btnActionBarRight.setImageResource(R.drawable.ic_my_creation_delete)
-            btnActionBarNextToRight.setImageResource(R.drawable.ic_my_creation_unselect_all)
+            btnActionBarNextToRight.setImageResource(R.drawable.ic_my_creation_delete)
+            btnActionBarRight.setImageResource(R.drawable.ic_my_creation_unselect_all)
+
+            btnActionBarNextToRight.margin("right", -6)
+            tvCenter.margin("horizontal", 32)
         }
 
         binding.bottomBar.apply {
@@ -150,99 +149,91 @@ class MyCreationActivity : WhatsappSharingActivity<ActivityMyCreationBinding>() 
 
     // Handle other
     //==================================================================================================================
-    private fun handleDelete() {
+    private fun handleDelete(thumbPath: String = "") {
+        val dialog = ConfirmDialog(this, R.string.delete, R.string.are_you_sure_want_to_delete_this_item)
+        dialog.show()
+        dialog.onYesClick = {
+            launchIO(
+                blockIO = { viewModel.deleteMyCreation(this, thumbPath) },
+                blockMain = { state ->
+                    when (state) {
+                        DeleteState.Empty -> showToast(R.string.please_select_an_item)
+                        DeleteState.Success -> viewModel.resetGetMyCreation(this)
+                        is DeleteState.Failure -> eLog("handleDelete: ${state.error}")
+                    }
+                }
+            )
+        }
+    }
+
+    fun changeImageActionBarRight(isLastItem: Boolean) {
+        val res = if (isLastItem) R.drawable.ic_my_creation_selected_all else R.drawable.ic_my_creation_unselect_all
+        binding.actionBar.btnActionBarRight.setImageResource(res)
+    }
+
+    private fun resetData() {
+        viewModel.resetGetMyCreation(this)
+    }
+
+    private fun handlePrepareAnotherAction(typeShare: Int) {
         launchIO(
-            blockIO = { viewModel.deleteMyCreation(this) },
+            blockIO = { viewModel.getItemSelectedState() },
             blockMain = { state ->
                 when (state) {
-                    DeleteState.Empty -> showToast(R.string.please_select_an_item)
-                    DeleteState.Success -> viewModel.setSelectionState(false)
-                    is DeleteState.Failure -> eLog("handleDelete: ${state.error}")
+                    ShareState.Empty -> showToast(R.string.please_select_an_item)
+                    is ShareState.Success -> {
+                        when (typeShare) {
+                            ValueKey.SHARE_ANOTHER_APP -> shareImagesPaths(state.thumbPathList)
+                            ValueKey.ADD_TELEGRAM -> viewModel.addToTelegram(this, state.thumbPathList)
+                            ValueKey.ADD_WHATSAPP -> handleAddToWhatsApp(state.thumbPathList)
+                            ValueKey.DOWNLOAD_TO_EXTERNAL -> checkStoragePermission(state.thumbPathList)
+                        }
+                    }
                 }
             }
         )
     }
 
-    fun changeImageActionBarRight(isReset: Boolean) {
-        val res = if (isReset) R.drawable.ic_my_creation_selected_all else R.drawable.ic_my_creation_unselect_all
-        binding.actionBar.btnActionBarRight.setImageResource(res)
-    }
+    private fun handleAddToWhatsApp(thumbPathList: List<String>) {
 
-    private fun resetData() {
-        viewModel.apply {
-            resetGetMyCreation(this@MyCreationActivity)
-            setSelectionState(false)
+        if (thumbPathList.size < 3) {
+            showToast(R.string.at_least_3_photos_are_needed)
+            return
         }
-        changeImageActionBarRight(true)
-    }
 
-    private fun handleSelectAll() {
-//        val shouldSelectAll = viewModel.selectAll()
-//        changeImageActionBarRight(!shouldSelectAll)
-    }
+        if (thumbPathList.size > 30) {
+            showToast(R.string.maximum_30_images)
+            return
+        }
 
-    private fun handleAddToTelegram(list: ArrayList<String>) {
-//        if (list.isEmpty()) {
-//            showToast(R.string.no_images_are_currently_selected)
-//            return
-//        }
-//        viewModel.addToTelegram(this, list)
-    }
+        val dialog = CreateNameDialog(this)
+        dialog.show()
 
-    private fun handleAddToWhatsApp(list: ArrayList<String>) {
-//        if (list.isEmpty()) {
-//            showToast(R.string.no_images_are_currently_selected)
-//            return
-//        }
-//        if (list.size < 3) {
-//            showToast(R.string.limit_3_items)
-//            return
-//        }
-//        if (list.size > 30) {
-//            showToast(R.string.limit_30_items)
-//            return
-//        }
-//
-//        val dialog = CreateNameDialog(this)
-//        LanguageHelper.setLocale(this)
-//        dialog.show()
-//
-//        fun dismissDialog() {
-//            dialog.dismiss()
-//            hideNavigation(true)
-//        }
-//        dialog.onNoClick = {
-//            dismissDialog()
-//        }
-//        dialog.onDismissClick = {
-//            dismissDialog()
-//        }
-//        dialog.onYesClick = { packageName ->
-//            dismissDialog()
-//            viewModel.addToWhatsapp(this, packageName, list) { stickerPack ->
-//                if (stickerPack != null) {
-//                    addToWhatsapp(stickerPack) {
-//                        resetData()
-//                    }
-//                }
-//            }
-//        }
+        dialog.onYesClick = { packageName ->
+            viewModel.addToWhatsapp(this, packageName, thumbPathList) { stickerPack ->
+                if (stickerPack != null) {
+                    addToWhatsapp(stickerPack) {
+                        resetData()
+                    }
+                }
+            }
+        }
     }
 
     private fun handleRcv() {
         editAdapter.apply {
-//            onItemClick = { pathImage -> handleItemClick(pathImage, ValueKey.MY_CHARACTER) }
-//            onItemTick = { position -> viewModel.toggleSelect(position) }
-//            onEditClick = { pathInternal -> handleEditClick(pathInternal) }
-//            onDeleteClick = { pathInternal -> handleDelete(arrayListOf(pathInternal)) }
-//            onLongClick = { position -> handleLongClick(position) }
+            onItemClick = { model -> handleItemClick(model.thumbPath, ValueKey.EDIT_CREATION) }
+            onItemSelectClick = { position -> viewModel.touchSelectMyCreation(position) }
+            onItemEditClick = { model -> checkInternet { handleEditClick(model.thumbPath) } }
+            onItemDeleteClick = { model -> handleDelete(model.thumbPath) }
+            onItemLongClick = { position -> viewModel.showSelectMyCreation(position) }
         }
 
         viewAdapter.apply {
-//            onItemClick = { pathImage -> handleItemClick(pathImage, ValueKey.MY_DESIGN) }
-//            onItemTick = { position -> viewModel.toggleSelect(position) }
-//            onDeleteClick = { pathInternal -> handleDelete(arrayListOf(pathInternal)) }
-//            onLongClick = { position -> handleLongClick(position) }
+            onItemClick = { model -> handleItemClick(model.thumbPath, ValueKey.VIEW_CREATION) }
+            onItemSelectClick = { position -> viewModel.touchSelectMyCreation(position) }
+            onItemDeleteClick = { model -> handleDelete(model.thumbPath) }
+            onItemLongClick = { position -> viewModel.showSelectMyCreation(position) }
         }
 
         binding.rcvEditCreation.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
@@ -287,99 +278,40 @@ class MyCreationActivity : WhatsappSharingActivity<ActivityMyCreationBinding>() 
 
     }
 
-    private fun handleLongClick(position: Int) {
-//        viewModel.showLongClick(position)
-//        handleSelectList(false)
-    }
-
-    private fun handleEditClick(pathInternal: String) {
-//        lifecycleScope.launch(Dispatchers.IO) {
-//            showLoading()
-//            viewModel.editItem(this@MyCreationActivity, pathInternal, dataViewModel.allData.value)
-//            withContext(Dispatchers.Main) {
-//                if (viewModel.isApi && dataViewModel.allData.value.size <= ValueKey.POSITION_API && InternetHelper.isInternetAvailable(
-//                        this@MyCreationActivity
-//                    )
-//                ) {
-//                    viewModel.isCallData = true
-//                    viewModel.pathImageSelect = pathInternal
-//                    dataViewModel.ensureData(this@MyCreationActivity)
-//                    return@withContext
-//                } else if (viewModel.isApi && dataViewModel.allData.value.size <= ValueKey.POSITION_API && !InternetHelper.isInternetAvailable(
-//                        this@MyCreationActivity
-//                    )
-//                ) {
-//                    dismissLoading(true)
-//                    showToast(R.string.please_check_your_internet)
-//                    return@withContext
-//                }
-//                dismissLoading(true)
-//                viewModel.checkDataInternet(this@MyCreationActivity) {
-//                    val intent = Intent(this@MyCreationActivity, CustomizeActivity::class.java)
-//                    intent.putExtra(IntentKey.INTENT_KEY, viewModel.positionCharacter)
-//                    intent.putExtra(IntentKey.STATUS_FROM_KEY, ValueKey.EDIT)
-//                    val option = ActivityOptions.makeCustomAnimation(
-//                        this@MyCreationActivity, R.anim.slide_in_right, R.anim.slide_out_left
-//                    )
-//                    showInterAll { startActivity(intent, option.toBundle()) }
-//                }
-//            }
-//        }
-    }
-
-    private fun handleDelete(pathList: ArrayList<String> = arrayListOf()) {
-
-//        val pathInternalList = if (pathList.isEmpty()) viewModel.getPathSelected() else pathList
-//        if (pathInternalList.isEmpty()) {
-//            showToast(R.string.please_select_an_image)
-//            return
-//        }
-//        val dialog = ConfirmDialog(this, R.string.delete, R.string.do_you_want_to_delete)
-//        LanguageHelper.setLocale(this)
-//        dialog.show()
-//        dialog.onNoClick = {
-//            dialog.dismiss()
-//            hideNavigation(true)
-//        }
-//        dialog.onYesClick = {
-//            lifecycleScope.launch(Dispatchers.IO) {
-//                viewModel.deleteItem(this@MyCreationActivity, pathInternalList)
-//                withContext(Dispatchers.Main) {
-//                    dialog.dismiss()
-//                    hideNavigation(true)
-//                    resetData()
-//                }
-//            }
-//        }
-    }
-
-    private fun handleShare() {
-//        val pathInternalList = viewModel.getPathSelected()
-//        if (pathInternalList.isEmpty()) {
-//            showToast(R.string.please_select_an_image)
-//            return
-//        }
-//        shareImagesPaths(pathInternalList)
+    private fun handleEditClick(thumbPath: String) {
+        launchIO(
+            blockIO = { viewModel.getDataNameAndFileNameInternalByThumbPath(thumbPath) },
+            blockMain = { dataName, fileNameInternal ->
+                val intent = Intent(this@MyCreationActivity, CustomizeActivity::class.java)
+                intent.apply {
+                    intent.putExtra(IntentKey.AVATAR_NAME_KEY, dataName)
+                    intent.putExtra(IntentKey.CUSTOM_STATUS_PLAY_KEY, ValueKey.EDIT)
+                    intent.putExtra(IntentKey.PATH_EDIT_KEY, fileNameInternal)
+                }
+                val option = AnimationHelper.intentAnimRL(this)
+                startActivity(intent, option.toBundle())
+            }
+        )
     }
 
     private fun handleItemClick(pathImage: String, type: Int) {
-//        val intent = Intent(this, ViewActivity::class.java)
-//        intent.putExtra(IntentKey.INTENT_KEY, pathImage)
-//        intent.putExtra(IntentKey.TYPE_KEY, ValueKey.TYPE_VIEW)
-//        intent.putExtra(IntentKey.STATUS_KEY, type)
-//        val option = ActivityOptions.makeCustomAnimation(
-//            this@MyCreationActivity, R.anim.slide_in_right, R.anim.slide_out_left
-//        )
-//        showInterAll { startActivity(intent, option.toBundle()) }
+        val intent = Intent(this, ViewActivity::class.java)
+        intent.apply {
+            putExtra(IntentKey.PATH_KEY, pathImage)
+            putExtra(IntentKey.VIEW_TYPE_KEY, ValueKey.VIEW_TYPE)
+            putExtra(IntentKey.MY_CREATION_VIEW_KEY, type)
+        }
+        val option = AnimationHelper.intentAnimRL(this)
+        startActivity(intent, option.toBundle())
     }
 
-    private fun checkStoragePermission() {
+    private fun checkStoragePermission(thumbPathList: List<String> = emptyList()) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             handleDownload()
         } else {
             val perms = permissionViewModel.getStoragePermissions()
             if (checkPermissions(perms)) {
-                handleDownload()
+                handleDownload(thumbPathList)
             } else if (permissionViewModel.needGoToSettings(sharePreference, true)) {
                 goToSettings()
             } else {
@@ -388,35 +320,121 @@ class MyCreationActivity : WhatsappSharingActivity<ActivityMyCreationBinding>() 
         }
     }
 
-    private fun handleDownload() {
-//        val pathInternalList = viewModel.getPathSelected()
-//        if (pathInternalList.isEmpty()) {
-//            showToast(R.string.please_select_an_image)
-//            return
-//        }
-//        viewModel.downloadFiles(this)
+    private fun handleDownload(thumbPathList: List<String> = emptyList()) {
+        viewModel.downloadThumbPathToExternal(this, thumbPathList)
+    }
+
+
+    // Observable
+    //==================================================================================================================
+    private fun setupTypeSelected(type: Int) {
+        if (type == -1) return
+
+        binding.apply {
+            val strokeWith = UnitHelper.dpToPx(this@MyCreationActivity, 2f)
+            val backgroundSelected = R.drawable.bg_100_button_focus_app_medium
+            val backgroundUnselect = R.drawable.bg_100_button_unfocus_app_medium
+
+            val textAndStrokeColorSelected = R.color.white
+            val textAndStrokeColorUnselect = R.color.green_003B50
+
+            val strokeColorUnselect = R.color.transparent
+
+            if (type == ValueKey.EDIT_CREATION) {
+                rcvEditCreation.visible()
+                rcvViewCreation.gone()
+
+                btnEditCreation.setBackgroundResource(backgroundSelected)
+
+                tvEditCreation.apply {
+                    setTextColor(getColor(textAndStrokeColorSelected))
+                    setStroke(strokeWith, getColor(textAndStrokeColorUnselect))
+                }
+
+                btnViewCreation.setBackgroundResource(backgroundUnselect)
+
+                tvViewCreation.apply {
+                    setTextColor(getColor(textAndStrokeColorUnselect))
+                    setStroke(strokeWith, getColor(strokeColorUnselect))
+                }
+
+                layoutNoItem.isVisible = viewModel.editListIsEmpty()
+            } else {
+                rcvEditCreation.gone()
+                rcvViewCreation.visible()
+
+                btnEditCreation.setBackgroundResource(backgroundUnselect)
+
+                tvEditCreation.apply {
+                    setTextColor(getColor(textAndStrokeColorUnselect))
+                    setStroke(strokeWith, getColor(strokeColorUnselect))
+                }
+
+                btnViewCreation.setBackgroundResource(backgroundSelected)
+
+                tvViewCreation.apply {
+                    setTextColor(getColor(textAndStrokeColorSelected))
+                    setStroke(strokeWith, getColor(textAndStrokeColorUnselect))
+                }
+
+                layoutNoItem.isVisible = viewModel.viewListIsEmpty()
+            }
+            resetData()
+        }
+    }
+
+    private suspend fun handleDownloadState(state: HandleState) {
+        when (state) {
+            HandleState.LOADING -> showLoading()
+
+            HandleState.SUCCESS -> {
+                dismissLoading()
+                showToast(R.string.download_success)
+            }
+
+            else -> {
+                dismissLoading()
+                showToast(R.string.an_error_occurred)
+            }
+        }
+    }
+
+    private fun setupEditCreationType(list: List<MyCreationModel>) {
+        editAdapter.submitList(list)
+
+
+
+        lifecycleScope.launch {
+            dismissLoading()
+            binding.layoutNoItem.isVisible = list.isEmpty() && viewModel.isEditState()
+        }
+    }
+
+    private fun setupViewType(list: List<MyCreationModel>) {
+        viewAdapter.submitList(list)
+
+        binding.layoutNoItem.isVisible = list.isEmpty() && !viewModel.isEditState()
     }
 
     private fun setupIsLongClick(isShow: Boolean) {
         binding.apply {
             lnlBottomTop.isVisible = viewModel.isEditState()
+            imvBlur.visible()
 
             if (!isShow) {
                 actionBar.apply {
                     btnActionBarRight.invisible()
                     btnActionBarNextToRight.invisible()
                 }
+                lnlDownShare.gone()
 
                 if (viewModel.isEditState()) {
-                    lnlDownShare.visible()
-
-                    if (!viewModel.editListIsEmpty()) {
-                        lnlBottom.visible()
-                    } else {
-                        lnlBottom.gone()
+                    if (viewModel.editListIsEmpty()) {
+                        lnlBottomTop.gone()
+                        imvBlur.gone()
                     }
                 } else {
-                    lnlBottom.gone()
+                    imvBlur.gone()
                 }
             } else {
                 actionBar.apply {
@@ -428,105 +446,6 @@ class MyCreationActivity : WhatsappSharingActivity<ActivityMyCreationBinding>() 
                 lnlBottom.visible()
             }
         }
-
-    }
-
-    // Observable
-    //==================================================================================================================
-    private fun setupTypeSelected(type: Int) {
-        binding.apply {
-            if (type != -1) {
-
-                val strokeWith = UnitHelper.dpToPx(this@MyCreationActivity, 2f)
-
-                if (type == ValueKey.EDIT_CREATION) {
-                    rcvEditCreation.visible()
-                    rcvViewCreation.gone()
-
-                    btnEditCreation.setBackgroundResource(R.drawable.bg_100_button_focus_app_medium)
-
-                    tvEditCreation.apply {
-                        setTextColor(getColor(R.color.white))
-                        setStroke(strokeWith, getColor(R.color.green_003B50))
-                    }
-
-                    btnViewCreation.setBackgroundResource(R.drawable.bg_100_button_unfocus_app_medium)
-
-                    tvViewCreation.apply {
-                        setTextColor(getColor(R.color.green_003B50))
-                        setStroke(strokeWith, getColor(R.color.transparent))
-                    }
-
-                    layoutNoItem.isVisible = viewModel.editList.value.isEmpty()
-                } else {
-                    rcvEditCreation.visible()
-                    rcvViewCreation.gone()
-
-                    btnEditCreation.setBackgroundResource(R.drawable.bg_100_button_unfocus_app_medium)
-
-                    tvEditCreation.apply {
-                        setTextColor(getColor(R.color.green_003B50))
-                        setStroke(strokeWith, getColor(R.color.transparent))
-                    }
-
-                    btnViewCreation.setBackgroundResource(R.drawable.bg_100_button_focus_app_medium)
-
-                    tvViewCreation.apply {
-                        setTextColor(getColor(R.color.white))
-                        setStroke(strokeWith, getColor(R.color.green_003B50))
-                    }
-
-                    layoutNoItem.isVisible = viewModel.viewList.value.isEmpty()
-                }
-                resetData()
-            }
-        }
-    }
-
-    private suspend fun handleDownloadState(state: HandleState) {
-//        when (state) {
-//            HandleState.LOADING -> {
-//                showLoading()
-//            }
-//
-//            HandleState.SUCCESS -> {
-//                dismissLoading(true)
-//                showToast(R.string.download_success)
-//            }
-//
-//            else -> {
-//                dismissLoading(true)
-//                showToast(R.string.download_failed_please_try_again_later)
-//            }
-//        }
-    }
-
-    private fun setupEditCreationType(list: List<MyCreationModel>) {
-        editAdapter.submitList(list)
-
-        binding.layoutNoItem.isVisible = list.isEmpty() && viewModel.isEditState()
-
-        lifecycleScope.launch { dismissLoading() }
-    }
-
-    private fun setupViewType(list: List<MyCreationModel>) {
-        viewAdapter.submitList(list)
-
-        binding.layoutNoItem.isVisible = list.isEmpty() && !viewModel.isEditState()
-    }
-
-    private fun setupGetData(list: ArrayList<CustomizeModel>) {
-//        if (list.isNotEmpty()) {
-//            if (!viewModel.isCallData) {
-//                if (viewModel.typeSelected.value != -1) {
-//                    viewModel.setTypeStatus(viewModel.typeSelected.value)
-//                } else {
-//                    viewModel.setTypeStatus(ValueKey.MY_CHARACTER)
-//                }
-//            } else {
-//                handleEditClick(viewModel.pathImageSelect)
-//            }
-//        }
     }
 
     // Result + Permission
@@ -550,6 +469,7 @@ class MyCreationActivity : WhatsappSharingActivity<ActivityMyCreationBinding>() 
 
     override fun onRestart() {
         super.onRestart()
+        viewModel.resetGetMyCreation(this)
         initNativeCollab()
     }
 
