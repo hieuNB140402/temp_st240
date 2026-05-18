@@ -7,6 +7,7 @@ import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import androidx.annotation.IntDef
 import androidx.annotation.IntRange
+import com.google.common.util.concurrent.Striped.lock
 import com.meskiep.vaithat.core.extension.toRect
 import com.meskiep.vaithat.core.utils.key.DrawKey
 import kotlin.math.atan2
@@ -100,6 +101,10 @@ abstract class Draw {
         private set
     var isHide = false
         private set
+
+    var isSelect = false
+        private set
+
     var isDirty = false
         private set
 
@@ -130,9 +135,21 @@ abstract class Draw {
         return isLock
     }
 
+    fun setSelect(isSelect: Boolean): Draw {
+        this.isSelect = isSelect
+        return this
+    }
+
+    fun getSelect(): Boolean {
+        return isSelect
+    }
+
     fun setHide(hide: Boolean): Draw {
         isHide = hide
         return this
+    }
+    fun getHide(): Boolean {
+        return isHide
     }
 
     fun setFlippedH(state: Boolean): Draw {

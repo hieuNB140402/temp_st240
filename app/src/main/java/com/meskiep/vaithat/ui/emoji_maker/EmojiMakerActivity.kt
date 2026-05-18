@@ -39,10 +39,7 @@ class EmojiMakerActivity : BaseActivity<ActivityEmojiMakerBinding>() {
     }
 
     override fun initView() {
-        binding.rcvLayerSort.apply {
-            adapter = sortEmojiLayerAdapter
-            itemAnimator = null
-        }
+        initRcv()
         initDrawView()
         setupDragBottom()
     }
@@ -60,6 +57,10 @@ class EmojiMakerActivity : BaseActivity<ActivityEmojiMakerBinding>() {
             btnUndo.tap { drawView.undo() }
             btnRedo.tap { drawView.redo() }
         }
+        sortEmojiLayerAdapter.apply {
+            onLockClick = { drawableDraw, position -> handleLockItem(drawableDraw, position)}
+            onVisibleClick = { drawableDraw, position -> handleVisibleItem(drawableDraw, position)}
+        }
     }
 
 
@@ -68,6 +69,13 @@ class EmojiMakerActivity : BaseActivity<ActivityEmojiMakerBinding>() {
     override fun initActionBar() {
         binding.actionBar.btnActionBarLeft.setImageWithOption(R.drawable.ic_back)
         setStateActionBar(false)
+    }
+
+    private fun initRcv() {
+        binding.rcvLayerSort.apply {
+            adapter = sortEmojiLayerAdapter
+            itemAnimator = null
+        }
     }
 
     private fun setStateActionBar(isEnable: Boolean) = with(binding.actionBar) {
@@ -229,12 +237,19 @@ class EmojiMakerActivity : BaseActivity<ActivityEmojiMakerBinding>() {
     fun updateDrawList() {
         val list = binding.drawView.drawList
         val sortEmojiLayerModelList = list.map {
-            SortEmojiLayerModel(
-                drawableDraw = it
-            )
+            SortEmojiLayerModel(drawable = it)
         }
         sortEmojiLayerAdapter.submitList(sortEmojiLayerModelList)
+    }
 
+    private fun handleLockItem(drawableDraw: DrawableDraw, position: Int) {
+        binding.drawView.drawList[position].setLock(!drawableDraw.getLock())
+        updateDrawList()
+    }
+
+    private fun handleVisibleItem(drawableDraw: DrawableDraw, position: Int) {
+        binding.drawView.drawList[position].setHide(!drawableDraw.getHide())
+        updateDrawList()
     }
 
     // Observable
