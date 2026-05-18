@@ -20,22 +20,29 @@ import com.meskiep.vaithat.core.extension.tap
 import com.meskiep.vaithat.core.extension.visible
 import com.meskiep.vaithat.core.helper.DragBottomSheetHelper
 import com.meskiep.vaithat.core.helper.UnitHelper
+import com.meskiep.vaithat.data.model.SortEmojiLayerModel
 import com.meskiep.vaithat.data.model.draw.Draw
 import com.meskiep.vaithat.data.model.draw.DrawableDraw
 import com.meskiep.vaithat.databinding.ActivityEmojiMakerBinding
 import com.meskiep.vaithat.dialog.text.TextDialog
 import com.meskiep.vaithat.listener.listenerdraw.OnDrawListener
+import com.meskiep.vaithat.ui.emoji_maker.adapter.SortEmojiLayerAdapter
 import com.meskiep.vaithat.ui.emoji_maker.viewModel.EmojiMakerViewModel
 import kotlinx.coroutines.launch
 
 class EmojiMakerActivity : BaseActivity<ActivityEmojiMakerBinding>() {
     private val viewModel: EmojiMakerViewModel by viewModels()
 
+    private val sortEmojiLayerAdapter by lazy { SortEmojiLayerAdapter() }
     override fun setViewBinding(): ActivityEmojiMakerBinding {
         return ActivityEmojiMakerBinding.inflate(LayoutInflater.from(this))
     }
 
     override fun initView() {
+        binding.rcvLayerSort.apply {
+            adapter = sortEmojiLayerAdapter
+            itemAnimator = null
+        }
         initDrawView()
         setupDragBottom()
     }
@@ -215,7 +222,19 @@ class EmojiMakerActivity : BaseActivity<ActivityEmojiMakerBinding>() {
             val isEnable = binding.drawView.drawList.isNotEmpty()
 
             setStateActionBar(isEnable)
+            updateDrawList()
         }
+    }
+
+    fun updateDrawList() {
+        val list = binding.drawView.drawList
+        val sortEmojiLayerModelList = list.map {
+            SortEmojiLayerModel(
+                drawableDraw = it
+            )
+        }
+        sortEmojiLayerAdapter.submitList(sortEmojiLayerModelList)
+
     }
 
     // Observable
