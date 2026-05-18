@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:background="@color/yellow_FFEDBB"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="6:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!--        btnSort-->
+        <ImageView
+            android:id="@+id/btnSort"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:layout_marginStart="4dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_emoji_maker_sort"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!--        cvImage-->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvImage"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginVertical="8dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="5dp"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toEndOf="@+id/btnSort"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/img_emoji_maker_background_transparent" />
+
+            <!--            imvImage-->
+            <ImageView
+                android:id="@+id/imvImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/img_permission" />
+
+        </androidx.cardview.widget.CardView>
+
+        <!--        tvLayer-->
+        <TextView
+            android:id="@+id/tvLayer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/cookies"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:text="Layer 1"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/cvImage"
+            app:layout_constraintStart_toEndOf="@+id/cvImage"
+            app:layout_constraintTop_toTopOf="@+id/cvImage" />
+
+        <!--        btnLock-->
+        <ImageView
+            android:id="@+id/btnLock"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_emoji_maker_unlock"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!--        btnShow-->
+        <ImageView
+            android:id="@+id/btnShow"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_emoji_maker_show"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnLock"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#80717171"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import okio.Path
 
 @Dao
 interface EditCharacterDAO {
@@ -35,10 +36,15 @@ interface EditCharacterDAO {
     
     @Query("SELECT * FROM edit_character WHERE dataName = :dataName")
     suspend fun selectEditCharacterByDataName(dataName: String): EditCharacter
+
+    @Query("SELECT * FROM edit_character WHERE thumbPath = :thumbPath")
+    suspend fun selectEditCharacterByThumbPathInternal(thumbPath: String): EditCharacter
     
     // Update
     @Update
     suspend fun updateEditCharacter(editCharacter: EditCharacter)
+
+//    suspend fun updateEditCharacterByFileNameInternal()
 
     // Delete
     @Query("DELETE FROM edit_character")

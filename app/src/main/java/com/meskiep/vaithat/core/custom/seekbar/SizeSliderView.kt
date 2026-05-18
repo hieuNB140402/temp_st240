@@ -27,12 +27,12 @@ class SizeSliderView @JvmOverloads constructor(
 
     // Thumb
     private var thumbDrawable: Drawable =
-        ContextCompat.getDrawable(context, R.drawable.img_thumb)!!
-    private var thumbSize = dpToPx(16f)
+        ContextCompat.getDrawable(context, R.drawable.ic_emoji_maker_progress_thumb)!!
+    private var thumbSize = dpToPx(28f)
 
     // Min/Max indicator
-    private val minRadius = dpToPx(1f)
-    private val maxRadius = dpToPx(6f)
+    private val minRadius = dpToPx(3f)
+    private val maxRadius = dpToPx(7f)
 
     // Nền (fill)
     private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -50,13 +50,13 @@ class SizeSliderView @JvmOverloads constructor(
 
     // Paint cho phần đã kéo (Progress)
     private val progressPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = ContextCompat.getColor(context, R.color.blue_000D4C)
+        color = ContextCompat.getColor(context, R.color.white)
         style = Paint.Style.FILL
     }
 
     // Paint cho phần nền chưa kéo (Track)
     private val trackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = ContextCompat.getColor(context, R.color.gray_CCCCCC)
+        color = ContextCompat.getColor(context, R.color.white)
         style = Paint.Style.FILL
     }
 
@@ -112,8 +112,8 @@ class SizeSliderView @JvmOverloads constructor(
         canvas.drawPath(progressPath, progressPaint)
 
         // 4. Vẽ các hình tròn ở 2 đầu để tạo độ mượt (Optional)
-        canvas.drawCircle(startX, centerY, minRadius, progressPaint)
-        canvas.drawCircle(endX, centerY, maxRadius, trackPaint)
+//        canvas.drawCircle(startX, centerY, minRadius, progressPaint)
+//        canvas.drawCircle(endX, centerY, maxRadius, trackPaint)
 
         // 5. Vẽ Thumb
         val half = thumbSize / 2
@@ -143,10 +143,14 @@ class SizeSliderView @JvmOverloads constructor(
                 // --- LOGIC GIỚI HẠN MỚI ---
                 // Tính toán giới hạn tối thiểu (2/10 của maxSize)
                 val minProgressLimit = (maxSize * 0.07f).toInt()
+                val maxProgressLimit = (maxSize * 0.97f).toInt()
 
                 // Áp dụng giới hạn: nếu newProgress nhỏ hơn giới hạn, đặt nó bằng giới hạn
                 if (newProgress < minProgressLimit) {
                     newProgress = minProgressLimit
+                }
+                if (newProgress > maxProgressLimit){
+                    newProgress = maxProgressLimit
                 }
                 // --- KẾT THÚC LOGIC GIỚI HẠN MỚI ---
 

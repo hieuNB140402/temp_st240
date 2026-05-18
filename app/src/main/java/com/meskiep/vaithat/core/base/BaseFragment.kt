@@ -20,6 +20,7 @@ abstract class BaseFragment<T : ViewBinding> : Fragment() {
     protected abstract fun viewListener()
 
     open fun dataObservable() {}
+    open fun initActionBar() {}
     open fun initAds() {}
 
     protected val sharePreference = App.instant.sharePreference
@@ -38,6 +39,7 @@ abstract class BaseFragment<T : ViewBinding> : Fragment() {
         initAds()
         dataObservable()
         viewListener()
+        initActionBar()
     }
 
 }

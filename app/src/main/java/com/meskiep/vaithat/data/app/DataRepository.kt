@@ -84,6 +84,15 @@ class DataRepository @Inject constructor(
         return editCharacterDAO.selectEditCharacterByFileNameInternal(fileNameInternal)
     }
 
+    suspend fun selectEditCharacterByThumbPathInternal(thumbPath: String): EditCharacter {
+        return editCharacterDAO.selectEditCharacterByThumbPathInternal(thumbPath)
+    }
+
+    // Update
+    suspend fun updateEditCharacter(editCharacter: EditCharacter) {
+        editCharacterDAO.updateEditCharacter(editCharacter)
+    }
+
 
     // Delete
     suspend fun deleteAllEditCharacter() {

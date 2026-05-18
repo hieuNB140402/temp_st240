@@ -50,8 +50,6 @@ class TextDialog(val context: Activity) : BaseDialog<DialogTextBinding>(context,
 
         handleTextChange()
         handleRcv()
-
-
     }
 
     // Init

@@ -109,4 +109,7 @@
     <string name="create_package_name">Create package name</string>
     <string name="enter_your_package_name">Enter you package name</string>
     <string name="please_enter_your_package_name">Please enter your package name!</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="size">Size</string>
 </resources>

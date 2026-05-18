@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.emoji_maker.EmojiMakerActivity">
+
+    <include layout="@layout/layout_background" />
+
+    <!--    layoutActionBar-->
+    <FrameLayout
+        android:id="@+id/layoutActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include
+            android:id="@+id/actionBar"
+            layout="@layout/layout_actionbar" />
+    </FrameLayout>
+
+    <!--    flSave-->
+    <FrameLayout
+        android:id="@+id/flSave"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="12dp"
+        app:layout_constraintBottom_toTopOf="@+id/gl052"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutActionBar">
+
+        <!--        drawView-->
+        <com.meskiep.vaithat.core.custom.drawview.DrawView
+            android:id="@+id/drawView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+
+    <!--    gl052-->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl052"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.62" />
+
+    <!--    cvUndo-->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvUndo"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="1000dp"
+        app:cardElevation="3dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gl052">
+
+        <!--        btnUndo-->
+        <ImageView
+            android:id="@+id/btnUndo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_emoji_maker_undo_not_enable" />
+    </androidx.cardview.widget.CardView>
+
+    <!--    cvRedo-->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvRedo"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="1000dp"
+        app:cardElevation="3dp"
+        app:layout_constraintBottom_toBottomOf="@+id/cvUndo"
+        app:layout_constraintStart_toEndOf="@+id/cvUndo"
+        app:layout_constraintTop_toTopOf="@+id/cvUndo">
+
+        <!--        btnRedo-->
+        <ImageView
+            android:id="@+id/btnRedo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_emoji_maker_redo_not_enable" />
+    </androidx.cardview.widget.CardView>
+
+    <!--    btnLayer-->
+    <ImageView
+        android:id="@+id/btnLayer"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_emoji_maker_layer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gl052" />
+
+    <!--    btnBrush-->
+    <ImageView
+        android:id="@+id/btnBrush"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/ic_emoji_maker_brush"
+        app:layout_constraintBottom_toBottomOf="@+id/btnLayer"
+        app:layout_constraintEnd_toStartOf="@+id/btnLayer"
+        app:layout_constraintTop_toTopOf="@+id/btnLayer" />
+
+    <!--    btnText-->
+    <ImageView
+        android:id="@+id/btnText"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/ic_emoji_maker_text"
+        app:layout_constraintBottom_toBottomOf="@+id/btnBrush"
+        app:layout_constraintEnd_toStartOf="@+id/btnBrush"
+        app:layout_constraintTop_toTopOf="@+id/btnBrush" />
+
+    <!--    flItemLayer-->
+    <FrameLayout
+        android:id="@+id/flItemLayer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/yellow_FFEDBB"
+        app:layout_constraintBottom_toTopOf="@+id/flBottomNavigation"
+        app:layout_constraintTop_toBottomOf="@+id/cvUndo">
+
+        <!--        rcvItemLayer-->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcvItemLayer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="10dp"
+            android:paddingTop="6dp"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="5"
+            tools:listitem="@layout/item_customize_layer" />
+    </FrameLayout>
+
+    <!--    flBottomNavigation-->
+    <FrameLayout
+        android:id="@+id/flBottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/yellow_FBE46E"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!--        rcvBottomNavigation-->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcvBottomNavigation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="@dimen/cardview_compat_inset_shadow"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="2dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_customize_bottom_navigation" />
+    </FrameLayout>
+
+    <!--    flLayerSort-->
+    <FrameLayout
+        android:id="@+id/flLayerSort"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/yellow_FFEDBB"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cvUndo">
+
+        <!--        vDrag-->
+        <FrameLayout
+            android:id="@+id/vDrag"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:layout_marginHorizontal="128dp"
+            android:paddingVertical="6dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_12_solid_gray_opacity" />
+        </FrameLayout>
+
+        <!--        rcvLayerSort-->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcvLayerSort"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            android:paddingTop="4dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+
+            tools:listitem="@layout/item_emoji_maker_layer_sort" />
+    </FrameLayout>
+
+    <!--    frmBrush-->
+    <FrameLayout
+        android:id="@+id/frmBrush"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="10dp"
+        android:visibility="gone" />
+</androidx.constraintlayout.widget.ConstraintLayout>

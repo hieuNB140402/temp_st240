@@ -149,10 +149,23 @@ fun ImageView.setImageWithOption(res: Int) {
     this.visible()
 }
 
+fun ImageView.setImageWithOptionAndState(isEnable: Boolean, resEnable: Int, resDisable: Int) {
+    this.setImageResource(if (isEnable) resEnable else resDisable)
+    this.isEnabled = isEnable
+    this.visible()
+}
+
 fun View.setBackgroundWithOption(res: Int) {
     this.setBackgroundResource(res)
     this.visible()
 }
+
+fun View.setBackgroundWithOption(isEnable: Boolean, resEnable: Int, resDisable: Int) {
+    this.setBackgroundResource(if (isEnable) resEnable else resDisable)
+    this.isEnabled = isEnable
+    this.visible()
+}
+
 
 fun TextView.setTextWithOption(text: String, isCenter: Boolean = true) {
     this.text = text
@@ -190,9 +203,9 @@ fun View.margin(margin: String, distance: Int) {
     this.layoutParams = params
 }
 
-fun ImageView.setState(isEnable: Boolean, res: Int) {
+fun ImageView.setState(isEnable: Boolean, resEnable: Int, resDisable: Int) {
     this.isEnabled = isEnable
-    this.setImageResource(res)
+    this.setImageResource(if (isEnable) resEnable else resDisable)
 }
 
 

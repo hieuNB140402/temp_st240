@@ -1,20 +1,11 @@
 package com.meskiep.vaithat.ui.customize
 
 import android.annotation.SuppressLint
-import android.os.Bundle
-import android.util.StatsLog.logEvent
 import android.view.LayoutInflater
 import android.widget.ImageView
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
 import com.meskiep.vaithat.R
 import com.meskiep.vaithat.core.base.BaseActivity
@@ -22,7 +13,6 @@ import com.meskiep.vaithat.core.extension.checkInternet
 import com.meskiep.vaithat.core.extension.dLog
 import com.meskiep.vaithat.core.extension.eLog
 import com.meskiep.vaithat.core.extension.handleBackLeftToRight
-import com.meskiep.vaithat.core.extension.hideNavigation
 import com.meskiep.vaithat.core.extension.invisible
 import com.meskiep.vaithat.core.extension.launchIO
 import com.meskiep.vaithat.core.extension.loadImage
@@ -34,18 +24,13 @@ import com.meskiep.vaithat.core.extension.startIntentRightToLeft
 import com.meskiep.vaithat.core.extension.strings
 import com.meskiep.vaithat.core.extension.tap
 import com.meskiep.vaithat.core.extension.visible
-import com.meskiep.vaithat.core.helper.LanguageHelper
-import com.meskiep.vaithat.core.helper.MediaHelper
 import com.meskiep.vaithat.core.helper.UnitHelper
 import com.meskiep.vaithat.core.utils.key.IntentKey
 import com.meskiep.vaithat.core.utils.key.ValueKey
 import com.meskiep.vaithat.core.utils.state.SaveState
 import com.meskiep.vaithat.data.app.DataViewModel
-import com.meskiep.vaithat.data.local.data_character.DataCharacter
-import com.meskiep.vaithat.data.model.custom.CustomizeModel
 import com.meskiep.vaithat.data.model.custom.ItemNavCustomModel
 import com.meskiep.vaithat.data.model.custom.NavigationModel
-import com.meskiep.vaithat.data.model.custom.SuggestionModel
 import com.meskiep.vaithat.databinding.ActivityCustomizeBinding
 import com.meskiep.vaithat.dialog.ConfirmDialog
 import com.meskiep.vaithat.ui.add_character.AddCharacterActivity
@@ -61,7 +46,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.collections.get
 import kotlin.collections.isNotEmpty
 import kotlin.getValue
 import kotlin.jvm.java
@@ -220,12 +204,12 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         when (viewModel.customizeStatusPlay) {
             ValueKey.CREATE -> {
                 loadPathToImage(viewModel.getFirstImageView(), pathImageDefault)
-                setupActionNorma()
+                setupActionNormal()
             }
 
             ValueKey.EDIT -> {
                 loadPathToImage(viewModel.getFirstImageView(), pathImageDefault)
-                setupActionNorma()
+                setupActionNormal()
                 viewModel.pathSelectedList.forEachIndexed { index, path ->
                     if (path != "") {
                         loadPathToImage(viewModel.imageViewList[index], path)
@@ -250,9 +234,9 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         dLog("main")
     }
 
-    private fun setupActionNorma() = with(binding.actionBar) {
+    private fun setupActionNormal() = with(binding.actionBar) {
         btnActionBarCenterLeft.setImageWithOption(R.drawable.ic_flip_draw_horizontal)
-        btnActionBarCenterRight.setImageWithOption(R.drawable.ic_reset)
+        btnActionBarCenterRight.setImageWithOption(R.drawable.ic_reset_enable)
         btnActionBarRightText.setBackgroundWithOption(R.drawable.bg_focus_very_short)
         tvActionBarRightText.apply {
             setTextWithOption(strings(R.string.next))
@@ -416,13 +400,12 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 //                                    "click_item_${viewModel.dataCustomize.value!!.dataName}_edit",
 //                                    viewModel.dataCustomize.value!!.avatar
 //                                )
-//                                viewModel.updateEditCharacter(this@CustomizeActivity, result.path)
-//                                dismissLoading(true)
-//                                withContext(Dispatchers.Main) {
-//                                    startIntentRightToLeft(
-//                                        AddCharacterActivity::class.java, result.path
-//                                    )
-//                                }
+                                viewModel.updateEditCharacter(this@CustomizeActivity, result.path)
+                                dismissLoading()
+
+                                withContext(Dispatchers.Main) {
+                                    startIntentRightToLeft(AddCharacterActivity::class.java, result.path)
+                                }
                             }
 
                             else -> {

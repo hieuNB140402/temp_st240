@@ -24,15 +24,17 @@
         android:theme="@style/Theme.ST219_Clothes_Skins_Maker_for_RBX"
         tools:replace="android:fullBackupContent"
         tools:targetApi="31">
-
+        <activity
+            android:name=".ui.emoji_maker.EmojiMakerActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.my_creation.MyCreationActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.view.ViewActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.add_character.AddCharacterActivity"
             android:exported="false"
@@ -104,14 +106,12 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
         <provider
             android:name=".core.share.whatsapp.StickerContentProvider"
             android:authorities="com.meskiep.vaithat.core.share.whatsapp.StickerContentProvider"
             android:enabled="true"
             android:exported="true"
             android:readPermission="com.whatsapp.sticker.READ" />
-
     </application>
 
 </manifest>

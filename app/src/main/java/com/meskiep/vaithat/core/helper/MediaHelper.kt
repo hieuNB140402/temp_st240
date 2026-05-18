@@ -34,6 +34,7 @@ import com.meskiep.vaithat.core.extension.eLog
 import com.meskiep.vaithat.core.utils.key.AssetsKey
 import com.meskiep.vaithat.core.utils.key.DomainKey
 import com.meskiep.vaithat.core.utils.state.SaveState
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import java.io.BufferedOutputStream
 import java.io.OutputStream
@@ -352,44 +353,44 @@ object MediaHelper {
         bitmap: Bitmap,
         oldFileName: String = ""
     ): Flow<SaveState> = flow {
+
         emit(SaveState.Loading)
-        val name = if (oldFileName == "") {
+
+        val name = if (oldFileName.isEmpty()) {
             StringHelper.generateRandomImageFileName()
         } else {
             oldFileName.split("/").last()
         }
+
         val resizedBitmap = bitmap.scale(512, 512)
-        try {
-            val directory = File(context.filesDir, album)
 
-            if (!directory.exists()) {
-                directory.mkdir()
-            }
+        val directory = File(context.filesDir, album)
+        if (!directory.exists()) {
+            directory.mkdir()
+        }
 
-            val file = File(directory, name)
+        val file = File(directory, name)
 
-            if (oldFileName != "" && file.exists()) {
-                file.delete()
-            }
+        if (oldFileName.isNotEmpty() && file.exists()) {
+            file.delete()
+        }
 
-            val fileOutputStream = FileOutputStream(file)
-
+        FileOutputStream(file).use { stream ->
             var quality = 100
             do {
-                fileOutputStream.flush()
-                resizedBitmap.compress(Bitmap.CompressFormat.PNG, quality, fileOutputStream)
-                quality -= 5 // Giảm chất lượng sau mỗi lần nén
-            } while (file.length() > 512 * 1024 && quality > 5) // 512 KB và chất lượng không dưới 5%
-
-            fileOutputStream.flush()
-            fileOutputStream.close()
-
-            resizedBitmap.recycle()
-
-            emit(SaveState.Success(file.absolutePath))
-        } catch (e: Exception) {
-            emit(SaveState.Error(e))
+                stream.flush()
+                resizedBitmap.compress(Bitmap.CompressFormat.PNG, quality, stream)
+                quality -= 5
+            } while (file.length() > 512 * 1024 && quality > 5)
         }
+
+        resizedBitmap.recycle()
+
+        emit(SaveState.Success(file.absolutePath))
+
+    }.catch { e ->
+        eLog("saveBitmapToInternalStorageZip: ${e.message}")
+        emit(SaveState.Error(e))
     }.flowOn(Dispatchers.IO)
 
     fun Activity.saveBitmapToInternalStorageZip(bitmap: Bitmap): String? {

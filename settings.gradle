@@ -42,5 +42,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ST240_Emoji & Sticker Maker Creator "
+rootProject.name = "ST240_Emoji & Sticker Maker Creator"
 include ':app'

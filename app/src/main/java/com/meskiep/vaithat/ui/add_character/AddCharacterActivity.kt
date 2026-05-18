@@ -1,9 +1,7 @@
 package com.meskiep.vaithat.ui.add_character
 
 import android.annotation.SuppressLint
-import android.app.ActivityOptions
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.text.Editable
@@ -22,7 +20,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.signature.ObjectKey
 import com.meskiep.vaithat.R
 import com.meskiep.vaithat.core.base.BaseActivity
-import com.meskiep.vaithat.core.extension.dLog
 import com.meskiep.vaithat.core.extension.gone
 import com.meskiep.vaithat.core.extension.handleBackLeftToRight
 import com.meskiep.vaithat.core.extension.hideSoftKeyboard
@@ -200,7 +197,7 @@ class AddCharacterActivity : BaseActivity<ActivityAddCharacterBinding>() {
     override fun initActionBar() {
         binding.actionBar.apply {
             btnActionBarLeft.setImageWithOption(R.drawable.ic_back)
-            btnActionBarCenter.setImageWithOption(R.drawable.ic_reset)
+            btnActionBarCenter.setImageWithOption(R.drawable.ic_reset_enable)
             btnActionBarRightText.setBackgroundWithOption(R.drawable.bg_focus_very_short)
             tvActionBarRightText.apply {
                 setTextWithOption(strings(R.string.save))

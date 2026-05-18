@@ -170,7 +170,8 @@ class CustomizeViewModel @Inject constructor(val dataRepository: DataRepository)
 
                 if (pathSelectedList[positionCustom] != keySelected) {
                     // Vi tri color duoc chon (hinh anh mau duoc chon)
-                    val positionColorSelected = itemLayerSelected.listImageColor.indexOfFirst { it.path == pathSelectedList[positionCustom] }
+                    val positionColorSelected =
+                        itemLayerSelected.listImageColor.indexOfFirst { it.path == pathSelectedList[positionCustom] }
                     // Dat lai focus mau (thanh mau)
                     setColorItemNav(positionNavigation, positionColorSelected)
                     // Dat lai vi tri mau duoc chon (da duoc chon hay chua)
@@ -605,7 +606,14 @@ class CustomizeViewModel @Inject constructor(val dataRepository: DataRepository)
     }.flowOn(Dispatchers.IO)
 
     suspend fun saveEditCharacter(context: Context, thumbPath: String) {
-        val editModel = EditCharacter(
+
+        val editModel = createEditCharacter(context, thumbPath)
+
+        insertDataCharacter(editModel)
+    }
+
+    suspend fun createEditCharacter(context: Context, thumbPath: String) : EditCharacter{
+        return EditCharacter(
             dataName = dataCustomize!!.dataName,
             thumbPath = thumbPath,
             fileNameInternal = MediaHelper.writeModelToFile<SuggestionModel>(
@@ -618,82 +626,22 @@ class CustomizeViewModel @Inject constructor(val dataRepository: DataRepository)
                 )
             )
         )
-
-        insertDataCharacter(editModel)
     }
 
 
     // Suggestion / Edit
     //==================================================================================================================
-//    fun getSuggestionList(): SuggestionModel {
-//        return SuggestionModel(
-//            avatarPath = avatarPath,
-//            positionColorItemList = ArrayList(positionColorItemList),
-//            itemNavList = ArrayList(itemNavList),
-//            colorItemNavList = ArrayList(colorItemNavList),
-//            isSelectedItemList = ArrayList(isSelectedItemList),
-//            keySelectedItemList = ArrayList(keySelectedItemList),
-//            isShowColorList = ArrayList(isShowColorList),
-//            pathSelectedList = ArrayList(pathSelectedList)
-//        )
-//    }
-//
-//    fun fillSuggestionToCustomize() {
-//        updatePositionColorItemList(suggestionModel.positionColorItemList)
-//        updateItemNavList(suggestionModel.itemNavList)
-//        updateColorNavList(suggestionModel.colorItemNavList)
-//        updateIsSelectedItemList(suggestionModel.isSelectedItemList)
-//        updateKeySelectedItemList(suggestionModel.keySelectedItemList)
-//        updateIsShowColorList(suggestionModel.isShowColorList)
-//        updatePathSelectedList(suggestionModel.pathSelectedList)
-//    }
-//
-//    suspend fun updateEditCharacter(context: Context, pathInternal: String) {
-//        val editList = loadEditList(context)
-//        val indexEdit = editList.indexOfFirst { it.pathInternalEdit == suggestionModel.pathInternalEdit }
-//        if (indexEdit != -1) {
-//            editList[indexEdit].apply {
-//                avatarPath = avatarPath
-//                positionColorItemList = this@CustomizeViewModel.positionColorItemList
-//                itemNavList = this@CustomizeViewModel.itemNavList
-//                colorItemNavList = this@CustomizeViewModel.colorItemNavList
-//                isSelectedItemList = this@CustomizeViewModel.isSelectedItemList
-//                keySelectedItemList = this@CustomizeViewModel.keySelectedItemList
-//                isShowColorList = this@CustomizeViewModel.isShowColorList
-//                pathSelectedList = this@CustomizeViewModel.pathSelectedList
-//                pathInternalEdit = pathInternal
-//            }
-////            MediaHelper.writeListToFile(context, ValueKey.EDIT_FILE_INTERNAL, editList)
-//        }
-//    }
-//
-//    fun addCharacterToEditList(context: Context, pathInternal: String) {
-//        val editList = loadEditList(context)
-//        val newEditModel = SuggestionModel(
-//            avatarPath = avatarPath,
-//            positionColorItemList = this@CustomizeViewModel.positionColorItemList,
-//            itemNavList = this@CustomizeViewModel.itemNavList,
-//            colorItemNavList = this@CustomizeViewModel.colorItemNavList,
-//            isSelectedItemList = this@CustomizeViewModel.isSelectedItemList,
-//            keySelectedItemList = this@CustomizeViewModel.keySelectedItemList,
-//            isShowColorList = this@CustomizeViewModel.isShowColorList,
-//            pathSelectedList = this@CustomizeViewModel.pathSelectedList,
-//            pathInternalEdit = pathInternal,
-//        )
-//        editList.add(0, newEditModel)
-////        MediaHelper.writeListToFile(context, ValueKey.EDIT_FILE_INTERNAL, editList)
-//    }
+    suspend fun updateEditCharacter(context: Context, newThumbPath: String) {
+        val oldEditCharacter = selectEditCharacterThumbPathInternal(thumbPathEdit)
+        updateThumbPathEdit(newThumbPath)
 
-//    private fun loadEditList(context: Context): ArrayList<SuggestionModel> {
-//        return try {
-//            MediaHelper.readListFromFile<SuggestionModel>(context, ValueKey.EDIT_FILE_INTERNAL)
-//                .toCollection(ArrayList())
-//        } catch (e: Exception) {
-//            Log.e("nbhieu", "updateEditCharacter: $e")
-//            arrayListOf()
-//        }
-//    }
+        var newEditCharacter = createEditCharacter(context, newThumbPath)
+        newEditCharacter = newEditCharacter.copy(id = oldEditCharacter.id)
 
+        MediaHelper.deleteFileByPathNotFlow(listOf(oldEditCharacter.thumbPath, oldEditCharacter.fileNameInternal))
+
+        updateEditCharacter(newEditCharacter)
+    }
 
     // View / Layout Helpers
     //==================================================================================================================
@@ -745,4 +693,13 @@ class CustomizeViewModel @Inject constructor(val dataRepository: DataRepository)
     suspend fun selectEditCharacterByFileNameInternal(fileNameInternal: String): EditCharacter {
         return dataRepository.selectEditCharacterByFileNameInternal(fileNameInternal)
     }
+
+    suspend fun selectEditCharacterThumbPathInternal(thumbPath: String): EditCharacter {
+        return dataRepository.selectEditCharacterByThumbPathInternal(thumbPath)
+    }
+
+    suspend fun updateEditCharacter(editCharacter: EditCharacter) {
+        dataRepository.updateEditCharacter(editCharacter)
+    }
+
 }

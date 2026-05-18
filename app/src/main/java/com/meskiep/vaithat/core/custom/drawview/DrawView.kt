@@ -368,14 +368,50 @@ open class DrawView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 
     public val redoList = ArrayList<List<DrawableDraw>>()
 
-//    fun undo() {
-//        if (undoList.size > 1) {
-//            undoTempList.clear()
-//            undoTempList.addAll(undoList[undoList.size - 1])
-//            redoList.add(undoList.removeAt(undoList.size - 1))
-//            val previousDraw = undoList[undoList.size - 1]
-//            removeAllDraw()
-//            for (draw in previousDraw) {
+    fun undo() {
+        if (undoList.size > 1) {
+            undoTempList.clear()
+            undoTempList.addAll(undoList[undoList.size - 1])
+            redoList.add(undoList.removeAt(undoList.size - 1))
+            val previousDraw = undoList[undoList.size - 1]
+            removeAllDraw()
+            for (draw in previousDraw) {
+                val drawableStickerNew = configDrawableDraw(draw, false)
+                drawList.add(drawableStickerNew)
+//                when (draw) {
+//                    is DrawableDraw -> {
+//
+//                    }
+//
+////                    is TextDraw -> {
+////                        val textStickerNew = configTextDraw(draw, false)
+////                        drawList.add(textStickerNew)
+////                    }
+////
+////                    is DrawDraw -> {
+////                        val drawStickerNew = configDrawDraw(draw, false)
+////                        drawList.add(drawStickerNew)
+////                    }
+//                }
+                invalidate()
+            }
+        } else {
+            removeAllDraw()
+            redoList.add(undoList.removeAt(undoList.size - 1))
+            undoList.clear()
+            if (OnDrawListener != null) {
+                OnDrawListener!!.onUndoDeleteAll()
+            }
+        }
+    }
+
+    fun redo() {
+        if (redoList.size > 1) {
+            removeAllDraw()
+            val redoTempList = redoList[redoList.size - 1]
+            undoList.add(redoTempList)
+            redoList.removeAt(redoList.size - 1)
+            for (draw in redoTempList) {
 //                when (draw) {
 //                    is DrawableDraw -> {
 //                        val drawableStickerNew = configDrawableDraw(draw, false)
@@ -392,25 +428,16 @@ open class DrawView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 //                        drawList.add(drawStickerNew)
 //                    }
 //                }
-//                invalidate()
-//            }
-//        } else {
-//            removeAllDraw()
-//            redoList.add(undoList.removeAt(undoList.size - 1))
-//            undoList.clear()
-//            if (OnDrawListener != null) {
-//                OnDrawListener!!.onUndoDeleteAll()
-//            }
-//        }
-//    }
-//
-//    fun redo() {
-//        if (redoList.size > 1) {
-//            removeAllDraw()
-//            val redoTempList = redoList[redoList.size - 1]
-//            undoList.add(redoTempList)
-//            redoList.removeAt(redoList.size - 1)
-//            for (draw in redoTempList) {
+                val drawableStickerNew = configDrawableDraw(draw, false)
+                drawList.add(drawableStickerNew)
+                invalidate()
+            }
+        } else {
+            removeAllDraw()
+            val redoTempList = redoList[redoList.size - 1]
+            undoList.add(redoTempList)
+            redoList.removeAt(redoList.size - 1)
+            for (draw in redoTempList) {
 //                when (draw) {
 //                    is DrawableDraw -> {
 //                        val drawableStickerNew = configDrawableDraw(draw, false)
@@ -427,35 +454,13 @@ open class DrawView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 //                        drawList.add(drawStickerNew)
 //                    }
 //                }
-//                invalidate()
-//            }
-//        } else {
-//            removeAllDraw()
-//            val redoTempList = redoList[redoList.size - 1]
-//            undoList.add(redoTempList)
-//            redoList.removeAt(redoList.size - 1)
-//            for (draw in redoTempList) {
-//                when (draw) {
-//                    is DrawableDraw -> {
-//                        val drawableStickerNew = configDrawableDraw(draw, false)
-//                        drawList.add(drawableStickerNew)
-//                    }
-//
-//                    is TextDraw -> {
-//                        val textStickerNew = configTextDraw(draw, false)
-//                        drawList.add(textStickerNew)
-//                    }
-//
-//                    is DrawDraw -> {
-//                        val drawStickerNew = configDrawDraw(draw, false)
-//                        drawList.add(drawStickerNew)
-//                    }
-//                }
-//                invalidate()
-//            }
-//            OnDrawListener!!.onRedoAll()
-//        }
-//    }
+                val drawableStickerNew = configDrawableDraw(draw, false)
+                drawList.add(drawableStickerNew)
+                invalidate()
+            }
+            OnDrawListener!!.onRedoAll()
+        }
+    }
 
     fun removeAllDraw() {
         drawList.clear()
